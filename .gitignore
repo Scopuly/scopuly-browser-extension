@@ -1,0 +1,53 @@
+# Dependencies and generated builds
+node_modules/
+dist/
+playground-dist/
+release/
+coverage/
+
+# Browser signing keys and signed packages
+keys/
+*.pem
+*.crx
+*.key
+*.p12
+*.pfx
+*.p8
+*.pkcs12
+*.jks
+*.keystore
+*.kdbx
+*.mobileprovision
+id_rsa
+id_ed25519
+GoogleService-Info.plist
+google-services.json
+*service-account*.json
+*firebase-admin*.json
+credentials*.json
+*.secrets.json
+
+# Local configuration
+.env
+.env.*
+!.env.example
+.npmrc
+.web-ext-config.js
+
+# Editor and operating system files
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Internal visual review captures and raw store-artwork sources
+docs/options-wide-review.png
+docs/visual-review.png
+docs/store-assets/scopuly-onboarding-raw.png
+
+# Local Codex workspace instructions contain machine-specific repository paths
+AGENTS.md
+
+# Unused legacy local signer kept outside the mobile-signer publication boundary
+src/background/vault.ts
+src/shared/crypto.ts

@@ -1,0 +1,186 @@
+{
+  "description": "Public deterministic-format test vector. All private keys are fixture-only.",
+  "protocolVersion": "1.0",
+  "pairingId": "pairing-fixture-001",
+  "sessionId": "session-fixture-001",
+  "requestId": "request-fixture-001",
+  "expiresAt": 4102444800000,
+  "extensionKeyPair": {
+    "privateKeyJwk": {
+      "key_ops": ["deriveBits"],
+      "ext": true,
+      "kty": "EC",
+      "x": "D4VYYX6zyV-hog-TOcOfQutl3UCs4T2ibn2V5a-vono",
+      "y": "-ZPh2U_yarIg2tniiKH3Lyrb8p8CbOGJ3hulhsdY9wA",
+      "crv": "P-256",
+      "d": "3I7aIXjJasWkj7W4FQCYoJocePa_dXp0nIr49GFLIQ0"
+    },
+    "publicKey": "BA-FWGF-s8lfoaIPkznDn0LrZd1ArOE9om59leWvr6J6-ZPh2U_yarIg2tniiKH3Lyrb8p8CbOGJ3hulhsdY9wA"
+  },
+  "mobileKeyPair": {
+    "privateKeyJwk": {
+      "key_ops": ["deriveBits"],
+      "ext": true,
+      "kty": "EC",
+      "x": "KGXADf82mhVHnUAbU7R6alorC8pUXGVyFqKcR8eIZZA",
+      "y": "vx_0GvFZWepNz7d02mYu4Woxx6PHYeAKD2mEOqLjte4",
+      "crv": "P-256",
+      "d": "g1esC-J43r6Qid_FHoua-T5b_7QeFIWDWQEX46XezQk"
+    },
+    "publicKey": "BChlwA3_NpoVR51AG1O0empaKwvKVFxlchainEfHiGWQvx_0GvFZWepNz7d02mYu4Woxx6PHYeAKD2mEOqLjte4"
+  },
+  "derivedKeys": {
+    "extensionToMobileHex": "1dcdf894365c23144190ffecc5f1a5238d2fa45307faecd9bd2f067c6347dd30",
+    "mobileToExtensionHex": "48b0c62c8f762288411fbb8a1d5127afd16a405d134b812f09fd0c7365501c10"
+  },
+  "account": {
+    "id": "account-fixture-001",
+    "publicKey": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV"
+  },
+  "pairingProof": {
+    "payload": {
+      "pairingId": "pairing-fixture-001",
+      "sessionId": "session-fixture-001",
+      "extensionPublicKey": "BA-FWGF-s8lfoaIPkznDn0LrZd1ArOE9om59leWvr6J6-ZPh2U_yarIg2tniiKH3Lyrb8p8CbOGJ3hulhsdY9wA",
+      "mobilePublicKey": "BChlwA3_NpoVR51AG1O0empaKwvKVFxlchainEfHiGWQvx_0GvFZWepNz7d02mYu4Woxx6PHYeAKD2mEOqLjte4",
+      "accountId": "account-fixture-001",
+      "accountPublicKey": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV",
+      "expiresAt": 4102444800000
+    },
+    "hashHex": "e3032f50a421d92b8b4386c5171518a411e681d7419b24fa9bb22b3dbdd6a4c0",
+    "signatureBase64": "dqRydrvzOtxBhJZGd/48s4+W6OYhfryCYJfS6tTaHH8o8enJDuuZMpxckGiyh95Qt34eLDIa4BASp19vq4DWDQ=="
+  },
+  "envelope": {
+    "protocolVersion": "1.0",
+    "sessionId": "session-fixture-001",
+    "requestId": "request-fixture-001",
+    "direction": "extension-to-mobile",
+    "counter": 1,
+    "expiresAt": 4102444800000,
+    "nonce": "AAECAwQFBgcICQoL",
+    "ciphertext": "nFkO87orCggvMYpBbRzrtI4DLc-cLiMnZ1IEXLfJHYZ5BqwOD7Ay0JC5wlY0YIRBhT_VgZE9VxQePPUeIdRZFOGGxsJyqREcslZs4nqWdDw8aes2LlKdoZykO-fgG1eF2eI3nfe806GQkUka5YSyoKTrGM2tpmrJ7xizmJA3DR5wDyV1FNLuA9Sf9yd06oLlC6Mr4zvV8dtsjSKaebHVmTYYwzQvhvzNH3MxhCyhphNwDIzj2Zv20-1crBM1Mng-mvJDQwOqgMnuIqNJJt-Eikpnj1ZYh2T67xvynlf5XELmlZis-CDlAhoQvgcPSzpsyuY94P41qZPpqM1yIcBmfQTw92N-gy2Xxnh44H77Prqh6V3crdxjMzuwtMN4dZESE4yCubWZ4weW2m9-vg-QEO-eauVR4lKKW66H9LP9fXCzBlKMJJzeOV3QExXG0jgJWuZZLraLVU3IWj6VTRxorkT4SMO1gNw_brEg7MXfrToxkEXKYETLt6Pgy8c65-LcsyejkFCYVJ7el6Bd7IvtdVeJDO3yKzyj7mTlWk7EkpKNrqXt3MQobAcy9PsSHsqdeX_r3aM66JTUNUGg8r9GsyZKIYx-gGkoFLvs06V2wV6p_6c4q1Wp_w"
+  },
+  "decryptedPayload": {
+    "requestId": "request-fixture-001",
+    "sessionId": "session-fixture-001",
+    "accountId": "account-fixture-001",
+    "publicKey": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV",
+    "origin": "https://dapp.example",
+    "appName": "Fixture dApp",
+    "expiresAt": 4102444800000,
+    "method": "signMessage",
+    "message": "Approve Scopuly fixture #1",
+    "messageHash": "85ef9bf49a4b52b9ca18f2bc12235f15c0b082c551ff5213d4ebb976ec5f79f0",
+    "networkPassphrase": "Test SDF Network ; September 2015"
+  },
+  "providerPayloads": {
+    "signTransaction": {
+      "requestId": "request-fixture-001",
+      "sessionId": "session-fixture-001",
+      "accountId": "account-fixture-001",
+      "publicKey": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV",
+      "origin": "https://dapp.example",
+      "appName": "Fixture dApp",
+      "expiresAt": 4102444800000,
+      "method": "signTransaction",
+      "networkPassphrase": "Test SDF Network ; September 2015",
+      "xdr": "AAAAAgAAAACYMLFdoiGe2OtuI2ARnHxfedspXlsoX/lhmTzE74IO6wAAAGQAAAAAAAAAAgAAAAEAAAAAAAAAAAAAAAD0hlcAAAAAAAAAAAEAAAAAAAAAAQAAAAC/ANct2uX9F6QVvn9cYypD3zMkx6zZWYfbLtoO5G4Z3QAAAAAAAAAAAJiWgAAAAAAAAAAA",
+      "transactionHash": "50b566fc6eac751a828664a7311fde401c830693560f61956f0f88f714df00ed",
+      "submit": false
+    },
+    "signAndSubmitTransaction": {
+      "requestId": "request-fixture-001",
+      "sessionId": "session-fixture-001",
+      "accountId": "account-fixture-001",
+      "publicKey": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV",
+      "origin": "https://dapp.example",
+      "appName": "Fixture dApp",
+      "expiresAt": 4102444800000,
+      "method": "signAndSubmitTransaction",
+      "networkPassphrase": "Test SDF Network ; September 2015",
+      "xdr": "AAAAAgAAAACYMLFdoiGe2OtuI2ARnHxfedspXlsoX/lhmTzE74IO6wAAAGQAAAAAAAAAAgAAAAEAAAAAAAAAAAAAAAD0hlcAAAAAAAAAAAEAAAAAAAAAAQAAAAC/ANct2uX9F6QVvn9cYypD3zMkx6zZWYfbLtoO5G4Z3QAAAAAAAAAAAJiWgAAAAAAAAAAA",
+      "transactionHash": "50b566fc6eac751a828664a7311fde401c830693560f61956f0f88f714df00ed",
+      "submit": true
+    },
+    "signMessage": {
+      "requestId": "request-fixture-001",
+      "sessionId": "session-fixture-001",
+      "accountId": "account-fixture-001",
+      "publicKey": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV",
+      "origin": "https://dapp.example",
+      "appName": "Fixture dApp",
+      "expiresAt": 4102444800000,
+      "method": "signMessage",
+      "message": "Approve Scopuly fixture #1",
+      "messageHash": "85ef9bf49a4b52b9ca18f2bc12235f15c0b082c551ff5213d4ebb976ec5f79f0",
+      "networkPassphrase": "Test SDF Network ; September 2015"
+    },
+    "signAuthEntry": {
+      "requestId": "request-fixture-001",
+      "sessionId": "session-fixture-001",
+      "accountId": "account-fixture-001",
+      "publicKey": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV",
+      "origin": "https://dapp.example",
+      "appName": "Fixture dApp",
+      "expiresAt": 4102444800000,
+      "method": "signAuthEntry",
+      "networkPassphrase": "Test SDF Network ; September 2015",
+      "authEntry": "AAAACs7gMC1ZhE0yvcqRXIID3USzP7t+3BkFHqN6vt8o7NRyAAAAAAAAACoAAeJAAAAAAAAAAACYMLFdoiGe2OtuI2ARnHxfedspXlsoX/lhmTzE74IO6wAAAAAAAAAAAAAAAAkfdY9YVMtFKpUyTKNAHR3fLG+2WA8EDuvLcN4xvzlLAAAACHRyYW5zZmVyAAAAAAAAAAA=",
+      "authEntryFingerprint": "1021710cd6d42529fa286619ae3693c23a4c5de16775741491092c9320f1144e",
+      "expirationLedger": 123456,
+      "boundAddress": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV"
+    },
+    "reportX402Receipt": {
+      "requestId": "request-fixture-001",
+      "sessionId": "session-fixture-001",
+      "accountId": "account-fixture-001",
+      "publicKey": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV",
+      "origin": "https://dapp.example",
+      "appName": "Fixture dApp",
+      "expiresAt": 4102444800000,
+      "method": "reportX402Receipt",
+      "receiptId": "090eba2a51a51f4b1be18f5141aacd9f",
+      "receiptUrl": "https://api.scopuly.com/x402/receipt/090eba2a51a51f4b1be18f5141aacd9f"
+    }
+  },
+  "providerResults": {
+    "signTransaction": {
+      "status": "completed",
+      "method": "signTransaction",
+      "transportRequestId": "transport-fixture-001",
+      "signedTxXdr": "AAAAAgAAAACYMLFdoiGe2OtuI2ARnHxfedspXlsoX/lhmTzE74IO6wAAAGQAAAAAAAAAAgAAAAEAAAAAAAAAAAAAAAD0hlcAAAAAAAAAAAEAAAAAAAAAAQAAAAC/ANct2uX9F6QVvn9cYypD3zMkx6zZWYfbLtoO5G4Z3QAAAAAAAAAAAJiWgAAAAAAAAAAB74IO6wAAAEA7qo2T1mOmmwN1eo70sCwcxLaqHRcypuDn2iSrLGB4HUvbtkA3A/8TMXfi6B8t150ZAPAS4AWj0gj2a0qrIrYH",
+      "signerAddress": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV"
+    },
+    "signAndSubmitTransaction": {
+      "status": "completed",
+      "method": "signAndSubmitTransaction",
+      "transportRequestId": "transport-fixture-002",
+      "signedTxXdr": "AAAAAgAAAACYMLFdoiGe2OtuI2ARnHxfedspXlsoX/lhmTzE74IO6wAAAGQAAAAAAAAAAgAAAAEAAAAAAAAAAAAAAAD0hlcAAAAAAAAAAAEAAAAAAAAAAQAAAAC/ANct2uX9F6QVvn9cYypD3zMkx6zZWYfbLtoO5G4Z3QAAAAAAAAAAAJiWgAAAAAAAAAAB74IO6wAAAEA7qo2T1mOmmwN1eo70sCwcxLaqHRcypuDn2iSrLGB4HUvbtkA3A/8TMXfi6B8t150ZAPAS4AWj0gj2a0qrIrYH",
+      "signerAddress": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV",
+      "submissionStatus": "success",
+      "hash": "50b566fc6eac751a828664a7311fde401c830693560f61956f0f88f714df00ed"
+    },
+    "signMessage": {
+      "status": "completed",
+      "method": "signMessage",
+      "transportRequestId": "transport-fixture-003",
+      "signedMessage": "fd295914fa6aeae459ac10adee6fbcead4d8db3eb428ca131019443c4e7f330f2127eb38549cffdfdb3cabbd2ba3fca2c8a5dc70ac79ce6646405336dd2d9e0a",
+      "signerAddress": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV"
+    },
+    "signAuthEntry": {
+      "status": "completed",
+      "method": "signAuthEntry",
+      "transportRequestId": "transport-fixture-004",
+      "signedAuthEntry": "+nHRzOhyXq2IrYrDUwnPKSjGTDLvCGXxrN6f6sE7HR5ueeZdp0x99ETyO5GIajIthWwL+aWZHSHhPmXLqwblDg==",
+      "signerAddress": "GCMDBMK5UIQZ5WHLNYRWAEM4PRPXTWZJLZNSQX7ZMGMTZRHPQIHOXUEV"
+    },
+    "reportX402Receipt": {
+      "status": "completed",
+      "method": "reportX402Receipt",
+      "transportRequestId": "transport-fixture-005",
+      "receiptId": "090eba2a51a51f4b1be18f5141aacd9f",
+      "receiptStatus": "delivered",
+      "transaction": "abababababababababababababababababababababababababababababababab"
+    }
+  }
+}

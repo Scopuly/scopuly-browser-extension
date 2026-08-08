@@ -1,0 +1,52 @@
+{
+  "manifest_version": 3,
+  "name": "Scopuly - Stellar Mobile Signer",
+  "short_name": "Scopuly",
+  "version": "0.3.2",
+  "description": "Connect Stellar dApps to Scopuly. Review account access and signing requests without exposing secret keys to the extension.",
+  "action": {
+    "default_title": "Scopuly - Stellar Mobile Signer",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/scopuly-16.png",
+      "32": "icons/scopuly-32.png",
+      "48": "icons/scopuly-48.png",
+      "128": "icons/scopuly-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/scopuly-16.png",
+    "32": "icons/scopuly-32.png",
+    "48": "icons/scopuly-48.png",
+    "128": "icons/scopuly-128.png"
+  },
+  "background": {
+    "service_worker": "assets/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["assets/content-script.js"],
+      "run_at": "document_start",
+      "all_frames": false,
+      "world": "ISOLATED"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["assets/injected-provider.js"],
+      "run_at": "document_start",
+      "all_frames": false,
+      "world": "MAIN"
+    }
+  ],
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://api.scopuly.com/*"
+  ],
+  "options_page": "options.html",
+  "minimum_chrome_version": "116",
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; img-src 'self' data:; style-src 'self'; connect-src 'self' https://api.scopuly.com"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@scopuly/stellar-wallets-kit-module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Stellar Wallets Kit adapter for the Scopuly browser extension.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./scopuly-extension.module.d.ts",
+      "import": "./scopuly-extension.module.mjs"
+    }
+  },
+  "peerDependencies": {
+    "@creit.tech/stellar-wallets-kit": ">=2.5.0 <3"
+  }
+}

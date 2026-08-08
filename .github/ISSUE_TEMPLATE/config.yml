@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security report
+    url: https://github.com/Scopuly/scopuly-browser-extension/security/advisories/new
+    about: Report exploitable vulnerabilities privately. Do not open a public issue.
+  - name: Scopuly support
+    url: https://about.scopuly.com/
+    about: Ask a general support or privacy question.

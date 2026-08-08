@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Open-source Stellar Mainnet and Testnet playground for the Scopuly browser provider." />
+    <meta property="og:site_name" content="Scopuly Provider Playground" />
+    <link rel="icon" href="./scopuly-coin-192.png" />
+    <link rel="preload" as="image" href="./scopuly-coin-192.png" />
+    <style>
+      html {
+        background: #06070b;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      html:not(.playground-ready) body {
+        overflow: hidden;
+      }
+
+      .app-shell {
+        visibility: hidden;
+      }
+
+      .playground-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 20px;
+        color: #cbd6ff;
+        background:
+          radial-gradient(circle at 50% 42%, rgba(77, 124, 249, .24), transparent 32%),
+          #06070b;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity .28s ease, visibility 0s linear .28s;
+      }
+
+      .playground-loader__mark {
+        position: relative;
+        display: grid;
+        width: 94px;
+        height: 94px;
+        place-items: center;
+      }
+
+      .playground-loader__mark::after {
+        position: absolute;
+        inset: 0;
+        border: 2px solid rgba(255, 255, 255, .12);
+        border-top-color: #87a5ff;
+        border-radius: 50%;
+        content: "";
+        animation: playground-loader-spin 1s linear infinite;
+      }
+
+      .playground-loader__icon {
+        width: 72px;
+        height: 72px;
+        filter: drop-shadow(0 12px 30px rgba(77, 124, 249, .42));
+      }
+
+      .playground-loader__label {
+        font: 600 14px/1.4 ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: .02em;
+      }
+
+      html.playground-ready .app-shell {
+        visibility: visible;
+      }
+
+      html.playground-ready .playground-loader {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      @keyframes playground-loader-spin {
+        to { transform: rotate(360deg); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .playground-loader,
+        .playground-loader__mark::after {
+          animation: none;
+          transition: none;
+        }
+      }
+    </style>
+    <title>Scopuly Provider Playground</title>
+  </head>
+  <body>
+    <div id="playground-loader" class="playground-loader" role="status" aria-label="Loading Scopuly Provider Playground">
+      <span class="playground-loader__mark" aria-hidden="true">
+        <img class="playground-loader__icon" src="./scopuly-coin-192.png" alt="" width="72" height="72" />
+      </span>
+      <span class="playground-loader__label">Loading Scopuly Playground…</span>
+    </div>
+
+    <main id="app-shell" class="app-shell" aria-hidden="true" inert>
+      <header class="site-header">
+        <img class="wordmark" src="./scopuly-wordmark-crop.png" alt="Scopuly" />
+        <span id="environment-badge" class="environment-badge">Open source · Stellar Mainnet selected</span>
+      </header>
+
+      <section class="hero">
+        <div>
+          <span class="eyebrow">Developer playground</span>
+          <h1>Test the complete Scopuly mobile signer flow.</h1>
+          <p>
+            Connect a public account, send a request to Scopuly Mobile and inspect the verified
+            response. This page never asks for a seed phrase or secret key.
+          </p>
+        </div>
+        <div class="provider-state" aria-live="polite">
+          <span id="provider-dot" class="status-dot"></span>
+          <div>
+            <small>Extension provider</small>
+            <strong id="provider-status">Detecting…</strong>
+            <span id="provider-version">Waiting for window.scopuly</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="qa-banner">
+        <strong>Physical-device QA order</strong>
+        <ol>
+          <li>Pair Scopuly Mobile and select the same network in the extension and playground.</li>
+          <li>Connect this origin and run message signing while the phone is in the background.</li>
+          <li>Build and sign the no-value transaction on the selected network without submitting it.</li>
+          <li>Repeat once with Reject, then force-close/reopen mobile and repeat.</li>
+        </ol>
+      </section>
+
+      <div class="dashboard-grid">
+        <section class="card" id="connection-card">
+          <div class="card-heading">
+            <div>
+              <span class="step">01</span>
+              <h2>Connection</h2>
+            </div>
+            <span id="connection-badge" class="pill neutral">Unknown</span>
+          </div>
+          <dl class="connection-details">
+            <div><dt>Account</dt><dd id="account-value">Not connected</dd></div>
+            <div><dt>Extension</dt><dd id="network-value">Unknown</dd></div>
+          </dl>
+          <div class="network-picker">
+            <div class="network-picker-copy">
+              <strong>Playground network</strong>
+              <small>Used to build and sign requests</small>
+            </div>
+            <div class="network-options" role="group" aria-label="Playground network">
+              <button id="network-public" class="network-option active" type="button" data-network="PUBLIC" aria-pressed="true">Public</button>
+              <button id="network-testnet" class="network-option" type="button" data-network="TESTNET" aria-pressed="false">Testnet</button>
+            </div>
+          </div>
+          <p id="network-guidance" class="network-guidance">The playground and extension must use the same network for signing.</p>
+          <div class="actions">
+            <button class="button primary" data-action="connect" data-requires-provider>Request access</button>
+            <button class="button" data-action="refresh" data-requires-provider>Refresh</button>
+            <button class="button danger" data-action="disconnect" data-requires-provider>Disconnect</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-heading">
+            <div>
+              <span class="step">02</span>
+              <h2>Background push</h2>
+            </div>
+            <span class="pill">Safe request</span>
+          </div>
+          <p class="hint">
+            Put Scopuly Mobile in the background, then request a SEP-53 signature. The push payload
+            contains only a generic wake signal; request details stay encrypted.
+          </p>
+          <label class="field-label" for="message-input">Message shown on mobile</label>
+          <textarea id="message-input" rows="4">Scopuly physical-device QA — approve this exact message</textarea>
+          <div class="actions">
+            <button class="button primary" data-action="sign-message" data-requires-provider>Sign message</button>
+          </div>
+        </section>
+
+        <section class="card wide-card">
+          <div class="card-heading">
+            <div>
+              <span class="step">03</span>
+              <h2 id="transaction-title">No-value Mainnet transaction</h2>
+            </div>
+            <span class="pill success">No asset transfer</span>
+          </div>
+          <p id="transaction-hint" class="hint">
+            The builder loads the connected account sequence from Horizon Mainnet and creates a
+            five-minute <code>manageData</code> transaction. Signing alone never submits it.
+          </p>
+          <label class="field-label" for="transaction-xdr">Transaction envelope XDR</label>
+          <textarea id="transaction-xdr" class="mono" rows="7" placeholder="Build a Mainnet transaction or paste an XDR envelope"></textarea>
+          <div class="actions">
+            <button class="button" data-action="build-transaction" data-requires-provider>Build safe XDR</button>
+            <button class="button primary" data-action="sign-transaction" data-requires-provider>Sign only</button>
+          </div>
+          <label class="confirmation-row">
+            <input id="submit-confirmation" type="checkbox" />
+            <span id="submit-confirmation-text">I understand that this submits a real Mainnet manageData operation, changes the account data entry and consumes a real XLM fee.</span>
+          </label>
+          <button id="submit-button" class="button warning" data-action="submit-transaction" data-requires-provider>
+            Sign and submit to Mainnet
+          </button>
+        </section>
+
+        <details class="card wide-card advanced-card">
+          <summary>
+            <span><span class="step">04</span> Advanced protocol methods</span>
+            <small>Soroban authorization and x402 receipt</small>
+          </summary>
+          <div class="advanced-grid">
+            <div>
+              <label class="field-label" for="auth-entry">Soroban authorization preimage XDR</label>
+              <textarea id="auth-entry" class="mono" rows="5" placeholder="Paste a Stellar HashIdPreimage XDR"></textarea>
+              <button class="button" data-action="sign-auth" data-requires-provider>Sign auth entry</button>
+            </div>
+            <div>
+              <label class="field-label" for="receipt-id">Scopuly x402 receipt ID</label>
+              <input id="receipt-id" class="mono" maxlength="32" placeholder="32 lowercase hex characters" />
+              <button class="button" data-action="report-receipt" data-requires-provider>Report receipt</button>
+            </div>
+          </div>
+        </details>
+
+        <section class="card wide-card result-card">
+          <div class="card-heading">
+            <div>
+              <span class="step">05</span>
+              <h2>Verified result</h2>
+            </div>
+            <button class="button compact" data-action="copy-result">Copy result</button>
+          </div>
+          <pre id="result-output" aria-live="polite">No request completed yet.</pre>
+        </section>
+
+        <section class="card wide-card log-card">
+          <div class="card-heading">
+            <div>
+              <span class="step">06</span>
+              <h2>Session log</h2>
+            </div>
+            <button class="button compact" data-action="clear-log">Clear</button>
+          </div>
+          <ul id="session-log" aria-live="polite"></ul>
+        </section>
+      </div>
+
+      <footer>
+        <span>Scopuly Provider API v0.3.0 example</span>
+        <a href="https://github.com/Scopuly/scopuly-browser-extension" target="_blank" rel="noreferrer">Source and documentation</a>
+      </footer>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

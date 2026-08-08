@@ -1,0 +1,899 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://scopuly.com/schemas/scopuly-bridge-v1.schema.json",
+  "title": "Scopuly Bridge Protocol 1.0",
+  "description": "Use the named $defs fragments to validate pairing, relay envelope, provider request and provider result objects.",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "protocolVersion": {
+      "const": "1.0"
+    },
+    "stellarPublicKey": {
+      "type": "string",
+      "pattern": "^G[A-Z2-7]{55}$"
+    },
+    "networkPassphrase": {
+      "enum": [
+        "Public Global Stellar Network ; September 2015",
+        "Test SDF Network ; September 2015"
+      ]
+    },
+    "hex32": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "hex16": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "base64Url": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "capability": {
+      "enum": [
+        "stellar:pubnet",
+        "stellar:testnet",
+        "signTransaction",
+        "signAndSubmitTransaction",
+        "signMessage",
+        "signAuthEntry",
+        "reportX402Receipt"
+      ]
+    },
+    "encryptedEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocolVersion",
+        "sessionId",
+        "requestId",
+        "direction",
+        "counter",
+        "expiresAt",
+        "nonce",
+        "ciphertext"
+      ],
+      "properties": {
+        "protocolVersion": {
+          "$ref": "#/$defs/protocolVersion"
+        },
+        "sessionId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "requestId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "direction": {
+          "enum": ["extension-to-mobile", "mobile-to-extension"]
+        },
+        "counter": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "nonce": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/base64Url"
+            },
+            {
+              "minLength": 16,
+              "maxLength": 16
+            }
+          ]
+        },
+        "ciphertext": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/base64Url"
+            },
+            {
+              "maxLength": 1398123
+            }
+          ]
+        }
+      }
+    },
+    "pairingCreateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocolVersion",
+        "extensionId",
+        "extensionVersion",
+        "extensionPublicKey",
+        "capabilities"
+      ],
+      "properties": {
+        "protocolVersion": {
+          "$ref": "#/$defs/protocolVersion"
+        },
+        "extensionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "extensionVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "extensionPublicKey": {
+          "$ref": "#/$defs/base64Url"
+        },
+        "capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/capability"
+          }
+        }
+      }
+    },
+    "pairing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "uri",
+        "status",
+        "protocolVersion",
+        "createdAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "uri": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^scopuly://extension/pair(?:\\?|$)"
+        },
+        "status": {
+          "enum": ["pending", "approved", "expired", "cancelled", "error"]
+        },
+        "protocolVersion": {
+          "$ref": "#/$defs/protocolVersion"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "error": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "extensionAccessToken": {
+          "type": "string",
+          "minLength": 43,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      }
+    },
+    "pairingCreateResponse": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/pairing"
+        },
+        {
+          "required": ["extensionAccessToken"]
+        }
+      ]
+    },
+    "pairingRelayPending": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pairing"],
+      "properties": {
+        "pairing": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pairing"
+            },
+            {
+              "properties": {
+                "status": {
+                  "enum": ["pending", "expired", "cancelled", "error"]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "pairingRelayApproved": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pairing",
+        "sessionId",
+        "mobilePublicKey",
+        "approvalEnvelope"
+      ],
+      "properties": {
+        "pairing": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pairing"
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "approved"
+                }
+              }
+            }
+          ]
+        },
+        "sessionId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "mobilePublicKey": {
+          "$ref": "#/$defs/base64Url"
+        },
+        "approvalEnvelope": {
+          "$ref": "#/$defs/encryptedEnvelope"
+        }
+      }
+    },
+    "pairingRelayStatus": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/pairingRelayPending"
+        },
+        {
+          "$ref": "#/$defs/pairingRelayApproved"
+        }
+      ]
+    },
+    "mobileSession": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "transport",
+        "status",
+        "accountIds",
+        "capabilities",
+        "createdAt",
+        "expiresAt",
+        "lastSeenAt",
+        "protocolVersion"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "transport": {
+          "const": "scopuly-bridge"
+        },
+        "status": {
+          "enum": ["connected", "expired", "revoked"]
+        },
+        "accountIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "signTransaction",
+              "signAndSubmitTransaction",
+              "signMessage",
+              "signAuthEntry",
+              "reportX402Receipt"
+            ]
+          }
+        },
+        "createdAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "lastSeenAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "protocolVersion": {
+          "$ref": "#/$defs/protocolVersion"
+        }
+      }
+    },
+    "mobileAccount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sessionId",
+        "publicKey",
+        "name",
+        "supportedNetworks",
+        "device",
+        "connectedAt",
+        "lastSeenAt",
+        "pairingProof"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sessionId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "publicKey": {
+          "$ref": "#/$defs/stellarPublicKey"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "federationAddress": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "supportedNetworks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["public", "testnet"]
+          }
+        },
+        "device": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "name", "platform"],
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/identifier"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "platform": {
+              "enum": ["ios", "android", "unknown"]
+            },
+            "model": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        },
+        "connectedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "lastSeenAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "pairingProof": {
+          "type": "string",
+          "minLength": 88,
+          "maxLength": 88
+        }
+      }
+    },
+    "pairingApprovalPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["session", "accounts"],
+      "properties": {
+        "session": {
+          "$ref": "#/$defs/mobileSession"
+        },
+        "accounts": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/mobileAccount"
+          }
+        }
+      }
+    },
+    "providerRequestBase": {
+      "type": "object",
+      "required": [
+        "requestId",
+        "sessionId",
+        "accountId",
+        "publicKey",
+        "origin",
+        "appName",
+        "expiresAt",
+        "method"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sessionId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "accountId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "publicKey": {
+          "$ref": "#/$defs/stellarPublicKey"
+        },
+        "origin": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        "appName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "method": {
+          "$ref": "#/$defs/capability"
+        }
+      }
+    },
+    "transactionRequest": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/providerRequestBase"
+        },
+        {
+          "type": "object",
+          "required": [
+            "xdr",
+            "networkPassphrase",
+            "transactionHash",
+            "submit"
+          ],
+          "properties": {
+            "method": {
+              "enum": ["signTransaction", "signAndSubmitTransaction"]
+            },
+            "xdr": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 524288
+            },
+            "networkPassphrase": {
+              "$ref": "#/$defs/networkPassphrase"
+            },
+            "transactionHash": {
+              "$ref": "#/$defs/hex32"
+            },
+            "submit": {
+              "type": "boolean"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "messageRequest": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/providerRequestBase"
+        },
+        {
+          "type": "object",
+          "required": ["message", "messageHash", "networkPassphrase"],
+          "properties": {
+            "method": {
+              "const": "signMessage"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "messageHash": {
+              "$ref": "#/$defs/hex32"
+            },
+            "networkPassphrase": {
+              "$ref": "#/$defs/networkPassphrase"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "authEntryRequest": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/providerRequestBase"
+        },
+        {
+          "type": "object",
+          "required": [
+            "authEntry",
+            "authEntryFingerprint",
+            "networkPassphrase",
+            "expirationLedger"
+          ],
+          "properties": {
+            "method": {
+              "const": "signAuthEntry"
+            },
+            "authEntry": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 262144
+            },
+            "authEntryFingerprint": {
+              "$ref": "#/$defs/hex32"
+            },
+            "networkPassphrase": {
+              "$ref": "#/$defs/networkPassphrase"
+            },
+            "expirationLedger": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "boundAddress": {
+              "$ref": "#/$defs/stellarPublicKey"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "receiptRequest": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/providerRequestBase"
+        },
+        {
+          "type": "object",
+          "required": ["receiptId", "receiptUrl"],
+          "properties": {
+            "method": {
+              "const": "reportX402Receipt"
+            },
+            "receiptId": {
+              "$ref": "#/$defs/hex16"
+            },
+            "receiptUrl": {
+              "type": "string",
+              "pattern": "^https://api\\.scopuly\\.com/x402/receipt/[a-f0-9]{32}$"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "providerRequest": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/transactionRequest"
+        },
+        {
+          "$ref": "#/$defs/messageRequest"
+        },
+        {
+          "$ref": "#/$defs/authEntryRequest"
+        },
+        {
+          "$ref": "#/$defs/receiptRequest"
+        }
+      ]
+    },
+    "providerRelayCreateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocolVersion",
+        "sessionId",
+        "requestId",
+        "envelope"
+      ],
+      "properties": {
+        "protocolVersion": {
+          "$ref": "#/$defs/protocolVersion"
+        },
+        "sessionId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "requestId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "envelope": {
+          "$ref": "#/$defs/encryptedEnvelope"
+        }
+      }
+    },
+    "providerRelayResponse": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "transportRequestId"],
+          "properties": {
+            "status": {
+              "const": "pending"
+            },
+            "transportRequestId": {
+              "$ref": "#/$defs/identifier"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "transportRequestId", "envelope"],
+          "properties": {
+            "status": {
+              "const": "ready"
+            },
+            "transportRequestId": {
+              "$ref": "#/$defs/identifier"
+            },
+            "envelope": {
+              "$ref": "#/$defs/encryptedEnvelope"
+            }
+          }
+        }
+      ]
+    },
+    "providerResult": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "transportRequestId"],
+          "properties": {
+            "status": {
+              "const": "pending"
+            },
+            "transportRequestId": {
+              "$ref": "#/$defs/identifier"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "status",
+            "method",
+            "transportRequestId",
+            "signerAddress",
+            "signedTxXdr"
+          ],
+          "properties": {
+            "status": {
+              "const": "completed"
+            },
+            "method": {
+              "enum": ["signTransaction", "signAndSubmitTransaction"]
+            },
+            "transportRequestId": {
+              "$ref": "#/$defs/identifier"
+            },
+            "signerAddress": {
+              "$ref": "#/$defs/stellarPublicKey"
+            },
+            "signedTxXdr": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 524288
+            },
+            "submissionStatus": {
+              "enum": ["success", "pending"]
+            },
+            "hash": {
+              "$ref": "#/$defs/hex32"
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "method": {
+                    "const": "signAndSubmitTransaction"
+                  }
+                },
+                "required": ["method"]
+              },
+              "then": {
+                "required": ["submissionStatus", "hash"]
+              }
+            }
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "method",
+            "transportRequestId",
+            "signedMessage",
+            "signerAddress"
+          ],
+          "properties": {
+            "status": {
+              "const": "completed"
+            },
+            "method": {
+              "const": "signMessage"
+            },
+            "transportRequestId": {
+              "$ref": "#/$defs/identifier"
+            },
+            "signedMessage": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{128}$"
+            },
+            "signerAddress": {
+              "$ref": "#/$defs/stellarPublicKey"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "method",
+            "transportRequestId",
+            "signedAuthEntry",
+            "signerAddress"
+          ],
+          "properties": {
+            "status": {
+              "const": "completed"
+            },
+            "method": {
+              "const": "signAuthEntry"
+            },
+            "transportRequestId": {
+              "$ref": "#/$defs/identifier"
+            },
+            "signedAuthEntry": {
+              "type": "string",
+              "minLength": 88,
+              "maxLength": 88
+            },
+            "signerAddress": {
+              "$ref": "#/$defs/stellarPublicKey"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "method",
+            "transportRequestId",
+            "receiptId",
+            "receiptStatus"
+          ],
+          "properties": {
+            "status": {
+              "const": "completed"
+            },
+            "method": {
+              "const": "reportX402Receipt"
+            },
+            "transportRequestId": {
+              "$ref": "#/$defs/identifier"
+            },
+            "receiptId": {
+              "$ref": "#/$defs/hex16"
+            },
+            "receiptStatus": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40
+            },
+            "transaction": {
+              "$ref": "#/$defs/hex32"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "transportRequestId"],
+          "properties": {
+            "status": {
+              "const": "rejected"
+            },
+            "transportRequestId": {
+              "$ref": "#/$defs/identifier"
+            },
+            "error": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "transportRequestId", "error"],
+          "properties": {
+            "status": {
+              "const": "failed"
+            },
+            "transportRequestId": {
+              "$ref": "#/$defs/identifier"
+            },
+            "error": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        }
+      ]
+    },
+    "controlPayload": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["action", "requestId"],
+          "properties": {
+            "action": {
+              "const": "cancel"
+            },
+            "requestId": {
+              "$ref": "#/$defs/identifier"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["action", "sessionId"],
+          "properties": {
+            "action": {
+              "const": "disconnect"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/identifier"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,46 @@
+name: Bug report
+description: Report a reproducible, non-sensitive extension problem.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Never include seed phrases, private keys, pairing links, relay tokens or exploitable security details. Use the Security tab for vulnerabilities.
+  - type: input
+    id: version
+    attributes:
+      label: Extension version
+      placeholder: 0.3.2
+    validations:
+      required: true
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Edge
+        - Brave
+        - Firefox
+        - Other Chromium browser
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe expected and actual behavior without private wallet data.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Safe diagnostics
+      description: Include only sanitized errors or logs with payloads, addresses, IDs and tokens removed.

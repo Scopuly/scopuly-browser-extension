@@ -1,0 +1,43 @@
+:root {
+  color-scheme: dark;
+  background: #080a0f;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  background: #080a0f;
+}
+
+.critical-loader {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.critical-loader img {
+  width: 54px;
+  height: 54px;
+  animation: scopuly-loader-pulse 1.15s ease-in-out infinite;
+  filter: drop-shadow(0 0 22px rgb(51 230 185 / 28%));
+}
+
+@keyframes scopuly-loader-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.92);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .critical-loader img {
+    animation: none;
+  }
+}
