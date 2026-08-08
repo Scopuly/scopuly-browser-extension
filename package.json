@@ -44,7 +44,7 @@
     "check": "tsc --noEmit && npm run playground:check && node scripts/check-extension.mjs && npm run check:opensource && npm run check:store-assets"
   },
   "dependencies": {
-    "@stellar/stellar-sdk": "^16.0.1",
+    "@stellar/stellar-sdk": "^16.2.0",
     "lucide": "^1.28.0",
     "qrcode": "^1.5.4"
   },
