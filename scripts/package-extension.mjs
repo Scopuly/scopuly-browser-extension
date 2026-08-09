@@ -42,7 +42,8 @@ if (target === 'source') {
     'playground-dist',
     'release',
     'node_modules',
-    'keys'
+    'keys',
+    'landing'
   ]);
   const excludedFiles = new Set([
     'AGENTS.md',

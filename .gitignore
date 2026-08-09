@@ -4,6 +4,7 @@ dist/
 playground-dist/
 release/
 coverage/
+/landing/
 
 # Browser signing keys and signed packages
 keys/

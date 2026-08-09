@@ -50,7 +50,7 @@ for (const archive of archives) {
 
   if (archive.target === 'source') {
     const forbiddenSourcePaths = names.filter((name) => (
-      /^(?:dist|release|node_modules)\//.test(name)
+      /^(?:dist|landing|release|node_modules)\//.test(name)
       || name === 'AGENTS.md'
       || name === 'src/background/vault.ts'
       || name === 'src/shared/crypto.ts'

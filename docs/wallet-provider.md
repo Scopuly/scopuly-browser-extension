@@ -26,7 +26,7 @@ part of the extension runtime. Signing requires the same network to be selected
 in the extension.
 The example imports the published API package and exercises the same provider
 surface exposed to third-party dApps. Try the hosted version at
-[`https://playground.scopuly.com/`](https://playground.scopuly.com/).
+[`https://extension.scopuly.com/playground/`](https://extension.scopuly.com/playground/).
 
 It also publishes the optional `window.stellar.scopuly` discovery namespace.
 
