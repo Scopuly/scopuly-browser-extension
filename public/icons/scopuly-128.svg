@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Scopuly"><defs><linearGradient id="g" x1="14" x2="112" y1="14" y2="116" gradientUnits="userSpaceOnUse"><stop stop-color="#58E6FF"/><stop offset="0.48" stop-color="#6E65FF"/><stop offset="1" stop-color="#A7FF7A"/></linearGradient></defs><rect width="128" height="128" rx="30" fill="#071015"/><path d="M24 75c14 17 55 24 79 3 5-4 3-11-4-11H67c-9 0-14-12-7-19 12-11 35-7 45 5" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/><path d="M26 53c18-22 62-27 83-1" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round" opacity=".9"/><circle cx="35" cy="74" r="5" fill="#A7FF7A"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="-85.333333 -85.333333 682.666667 682.666667" role="img" aria-labelledby="title">
+  <title id="title">Scopuly</title>
+  <circle fill="#546dec" cx="256" cy="256.5" r="256"/>
+  <path fill="#fff" d="M397.78 338.09a22.52 22.52 0 0 0-3.7.34l-91.63-91.62a20.82 20.82 0 0 0-.25-8.95l30.05-30.06a20.94 20.94 0 0 0 2.75.2 22 22 0 1 0-21.3-16.95l-30.16 30.16a22.6 22.6 0 0 0-2.62-.17 21.89 21.89 0 0 0 0 43.78 21.54 21.54 0 0 0 3.88-.36L376.29 356a22.29 22.29 0 0 0-.39 4 21.89 21.89 0 1 0 21.88-21.89Z"/>
+  <path fill="#fff" d="M311.32 331.08a23 23 0 0 0-2.77.19l-84.19-84.19h-63.7l-31.75 31.75h-28.82a21.92 21.92 0 1 0-.52 25h39.68L171 272h43l76 76a21.65 21.65 0 0 0-.58 4.92 21.89 21.89 0 1 0 21.88-21.88Z"/>
+  <path fill="#fff" d="M141.82 225a21.84 21.84 0 0 0 16.8-7.86h85.15l90-90.05c.28 0 .56 0 .85 0a21.89 21.89 0 1 0-20.87-15.32l-80.37 80.37h-72.61a21.88 21.88 0 1 0-19 32.82Z"/>
+  <path fill="#fff" d="M256 19.94C125.35 19.94 19.44 125.85 19.44 256.5S125.35 493.06 256 493.06 492.56 387.15 492.56 256.5 386.65 19.94 256 19.94Zm0 458.59c-122.62 0-222-99.41-222-222s99.41-222 222-222 222 99.41 222 222-99.38 222.03-222 222.03Z"/>
+</svg>

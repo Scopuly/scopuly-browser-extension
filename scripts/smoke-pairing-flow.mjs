@@ -495,6 +495,11 @@ await new Promise((resolve, reject) => {
 const dappAddress = dappServer.address();
 const dappUrl = reviewerUrl || `http://127.0.0.1:${dappAddress.port}/`;
 const dappOrigin = new URL(dappUrl).origin;
+const reviewerDappDocument = `<!doctype html>
+  <meta charset="utf-8">
+  <meta property="og:site_name" content="Scopuly Browser Extension">
+  <link rel="icon" type="image/png" href="/scopuly-reviewer-icon.png">
+  <title>Scopuly Browser Extension</title>`;
 const mobileChannel = await generateMobileChannel();
 const now = Date.now();
 const pairingExpiresAt = now + 120_000;
@@ -858,6 +863,31 @@ async function launchExtensionContext() {
     ]
   });
   await nextContext.route(bridgePattern, handleBridgeRoute);
+  if (reviewerUrl) {
+    await nextContext.route(`${dappOrigin}/**`, (route) => {
+      const request = route.request();
+      const url = new URL(request.url());
+      if (url.pathname === '/scopuly-reviewer-icon.png') {
+        return route.fulfill({
+          status: 200,
+          contentType: 'image/png',
+          body: dappIcon
+        });
+      }
+      if (request.resourceType() === 'document') {
+        return route.fulfill({
+          status: 200,
+          contentType: 'text/html; charset=utf-8',
+          headers: {
+            'Content-Security-Policy': "default-src 'none'; img-src 'self'; object-src 'none'; base-uri 'none'",
+            'Cache-Control': 'no-store'
+          },
+          body: reviewerDappDocument
+        });
+      }
+      return route.abort();
+    });
+  }
   return nextContext;
 }
 

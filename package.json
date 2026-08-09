@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/Scopuly/scopuly-browser-extension/issues"
   },
-  "homepage": "https://github.com/Scopuly/scopuly-browser-extension#readme",
+  "homepage": "https://extension.scopuly.com/",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -49,7 +49,7 @@
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "@scopuly/signer-extension-api": "0.3.2",
+    "@scopuly/signer-extension-api": "0.3.3",
     "@types/chrome": "^0.0.268",
     "@types/node": "^22.10.5",
     "@types/qrcode": "^1.5.6",

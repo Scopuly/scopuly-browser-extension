@@ -19,15 +19,16 @@ const publicationTextExtensions = new Set([
   '', '.css', '.html', '.js', '.json', '.jsx', '.less', '.md', '.mjs',
   '.ts', '.tsx', '.txt', '.xml', '.yaml', '.yml'
 ]);
-const ignoredLanguageGuardRoots = new Set([
-  '.git', 'dist', 'keys', 'node_modules', 'playground-dist', 'release'
+const ignoredLanguageGuardDirectories = new Set([
+  '.git', '.react-router', 'build', 'coverage', 'dist', 'keys', 'node_modules',
+  'playground-dist', 'release'
 ]);
 
 function publicationTextFiles(directory, relativeDirectory = '') {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const relativePath = path.join(relativeDirectory, entry.name);
     if (entry.isDirectory()) {
-      if (!relativeDirectory && ignoredLanguageGuardRoots.has(entry.name)) return [];
+      if (ignoredLanguageGuardDirectories.has(entry.name)) return [];
       return publicationTextFiles(path.join(directory, entry.name), relativePath);
     }
     if (!entry.isFile()) return [];

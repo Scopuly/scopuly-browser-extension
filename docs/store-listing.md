@@ -1,12 +1,12 @@
-# Store Listing Draft
+# Chrome Web Store Listing
 
 ## Name
 
-Scopuly — Stellar Mobile Signer
+Scopuly - Stellar Mobile Signer
 
 ## Short description
 
-Stellar mobile signer for dApps. Approve transactions, messages, Soroban requests and wallet access securely in Scopuly Mobile.
+Connect Stellar dApps to Scopuly. Review account access and signing requests without exposing secret keys to the extension.
 
 ## Detailed description
 
@@ -32,14 +32,27 @@ Key properties:
 
 Scopuly Mobile is required. This extension does not create, import or recover wallets.
 
+Encrypted provider requests and results are relayed through the Scopuly Bridge
+only to deliver the requested wallet operation. The relay sees short-lived
+routing metadata but cannot decrypt provider payloads.
+
 ## Category
 
-Productivity or Finance, depending on the store taxonomy. Use one consistent category across stores where possible.
+Tools
+
+## Public URLs
+
+- Homepage: `https://extension.scopuly.com/`
+- Support: `https://extension.scopuly.com/support/`
+- Privacy policy: `https://extension.scopuly.com/policy/`
+- Developer website: `https://scopuly.com/`
+- Source repository: `https://github.com/Scopuly/scopuly-browser-extension`
+- Developer playground: `https://extension.scopuly.com/playground/`
 
 ## Single purpose
 
-Bridge Stellar dApps in the desktop browser to Scopuly Mobile for account
-access, signing, submit and x402 receipt verification.
+Bridge Stellar dApps in the desktop browser to Scopuly Mobile for explicit
+account access, signing, transaction submission and verified result delivery.
 
 ## Required disclosures
 
@@ -75,7 +88,7 @@ Generate reviewer assets only from the final versioned Chromium ZIP and a
 controlled HTTPS reviewer origin:
 
 ```sh
-SCOPULY_REVIEWER_URL=https://scopuly.com/ npm run smoke:chromium:reviewer-assets
+SCOPULY_REVIEWER_URL=https://extension.scopuly.com/playground/ npm run smoke:chromium:reviewer-assets
 ```
 
 The capture command refuses localhost and non-HTTPS origins. Regenerate the

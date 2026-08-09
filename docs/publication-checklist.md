@@ -13,7 +13,7 @@ repository.
   excluded from Git and source archives.
 - [x] GitHub issue templates, pull-request template, CODEOWNERS, CI and
   Dependabot configuration are present.
-- [ ] Create the initial commit and push only after final owner approval.
+- [x] Initial public commit is published after owner approval.
 
 ## Extension behavior
 
@@ -32,21 +32,27 @@ repository.
 
 - [x] Package and manifest versions match at `0.3.2`.
 - [x] Chromium production build passes local validation.
+- [x] Current Chromium archive passes exact-ZIP smoke and the complete mocked
+  reviewer pairing/signing flow.
 - [x] Source ZIP reproduces the public Git file set.
 - [x] Binary packages include `LICENSE`, `THIRD_PARTY_NOTICES.md` and `OFL.txt`.
 - [ ] Regenerate the final Chromium, Edge and Firefox archives from the
   approved commit.
 - [ ] Install and test each final archive in its target browser.
 - [ ] Record SHA-256 checksums for the final archives.
-- [ ] Run the complete reviewer flow against the exact final archives.
+- [x] Record and verify the SHA-256 checksum for the current Chromium archive.
+- [ ] Run equivalent final archive checks when preparing Edge and Firefox.
 
 ## Security and privacy
 
 - [x] Extension CSP blocks remote executable code, inline scripts and `eval`.
 - [x] Secret and private-key filename guards run during validation.
 - [x] Provider payloads have method-specific validation and size limits.
-- [x] Privacy and security drafts are included in the repository.
-- [ ] Publish final privacy and support URLs for store listings.
+- [x] Final extension privacy policy and security reporting instructions are
+  included in the repository.
+- [x] Publish final privacy and support URLs for store listings.
+- [x] Extension-specific privacy, support and homepage pages are published at
+  `extension.scopuly.com`.
 - [ ] Enable GitHub secret scanning, push protection and private vulnerability
   reporting.
 - [ ] Complete an independent browser-extension security review.
@@ -56,9 +62,9 @@ repository.
 - [x] Store name, descriptions, permission justifications and search terms are
   drafted in [`store-listing.md`](store-listing.md).
 - [x] Required image dimensions and duplicate-image checks are automated.
-- [ ] Recapture all store screenshots from the exact final Chromium archive.
-- [ ] Confirm the listing contains no unsupported security or audit claims.
-- [ ] Confirm privacy disclosures match the final extension behavior.
+- [x] Recapture all store screenshots from the exact final Chromium archive.
+- [x] Confirm the listing contains no unsupported security or audit claims.
+- [x] Confirm privacy disclosures match the final extension behavior.
 
 ## Permission justifications
 

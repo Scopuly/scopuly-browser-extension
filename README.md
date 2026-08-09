@@ -98,14 +98,15 @@ See [Provider API](docs/wallet-provider.md),
 
 ## Developer Playground
 
-The [live Developer Playground](https://playground.scopuly.com/) is backed by
-the open-source [`examples/developer-playground/`](examples/developer-playground/)
-example. It is a minimal provider integration and physical-device manual QA
-surface. It exercises explicit account access, background message signing, a
-safe no-value `manageData` transaction with an explicit Public/Testnet selector,
+The [live Developer Playground](https://extension.scopuly.com/playground/) is a
+production demonstration of the provider flow. The open-source
+[`examples/developer-playground/`](examples/developer-playground/) project is
+the canonical minimal integration reference for developers and exercises the
+same public API: explicit account access, background message signing, a safe
+no-value `manageData` transaction with an explicit Public/Testnet selector,
 optional submission, Soroban authorization input, x402 receipt reporting,
-rejection and disconnect. It is built separately and is never included in the
-extension package.
+rejection and disconnect. The example is built separately and is never
+included in the extension package.
 
 ```bash
 npm run playground:dev

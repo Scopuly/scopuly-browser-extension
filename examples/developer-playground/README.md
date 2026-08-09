@@ -6,7 +6,10 @@ in the extension package. It imports the published
 `@scopuly/signer-extension-api` package for the canonical provider types and
 runtime access helper.
 
-Live demo: [`https://playground.scopuly.com/`](https://playground.scopuly.com/)
+Production demo: [`https://extension.scopuly.com/playground/`](https://extension.scopuly.com/playground/)
+
+This directory is the canonical minimal source reference for the same public
+provider flow. The production page uses a separate presentation layer.
 
 ## Run locally
 
