@@ -151,6 +151,22 @@ async function openConfirmWindow(id: string) {
   return created.id;
 }
 
+async function openMobileSetupWindow(origin: string, appName: string) {
+  const params = new URLSearchParams({
+    setup: '1',
+    origin,
+    appName
+  });
+  const url = chrome.runtime.getURL(`popup.html?${params.toString()}`);
+  await chrome.windows.create({
+    url,
+    type: 'popup',
+    width: 430,
+    height: 720,
+    focused: true
+  });
+}
+
 async function createPendingRequest(
   request: Omit<PendingRequest, 'id' | 'createdAt' | 'updatedAt' | 'expiresAt'>,
   openWindow = true
@@ -750,6 +766,15 @@ export async function handleProviderRequest(payload: any, sender: chrome.runtime
     await rejectPendingRequestsForOrigin(origin);
     await disconnectMobileOrigin(origin);
     return {};
+  }
+
+  if (!state.mobileAccounts.length
+    && ['requestAccess', 'getAddress', 'getPublicKey'].includes(method)) {
+    await openMobileSetupWindow(origin, appName).catch(() => undefined);
+    throw createProviderError(
+      SCOPULY_PROVIDER_ERROR.INVALID_REQUEST,
+      'First connect a Scopuly Mobile account in the extension window, then return here and try again.'
+    );
   }
 
   if (!state.mobileAccounts.length) {

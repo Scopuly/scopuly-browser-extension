@@ -1,6 +1,6 @@
 import './styles.css';
 import { NETWORKS, type NetworkId, type WalletState } from '../shared/types';
-import { shortAddress } from '../shared/format';
+import { formatOrigin, shortAddress } from '../shared/format';
 import { api } from './api';
 import {
   accountCard,
@@ -35,6 +35,14 @@ let pairingPoll: number | undefined;
 let pairingPollInFlight = false;
 let initialHealthCheckStarted = false;
 let pairingFailure: { title: string; message: string } | null = null;
+const params = new URLSearchParams(location.search);
+const setupRequested = params.get('setup') === '1';
+const setupOrigin = params.get('origin') || '';
+const setupAppName = (params.get('appName') || '').trim().slice(0, 80);
+
+function setupRequester() {
+  return setupAppName || formatOrigin(setupOrigin);
+}
 
 async function refresh() {
   state = await api.getState();
@@ -146,6 +154,14 @@ function onboarding(app: HTMLElement) {
   hero.append(coin, copy);
   app.appendChild(hero);
 
+  if (setupRequested) {
+    app.appendChild(inlineAlert(
+      'Connect a mobile account first',
+      `${setupRequester()} requested a Stellar address. Pair Scopuly Mobile below, then return to the website and click Scopuly again.`,
+      'warning'
+    ));
+  }
+
   if (pairingFailure) {
     app.appendChild(inlineAlert(
       pairingFailure.title,
@@ -163,7 +179,9 @@ function onboarding(app: HTMLElement) {
   );
 
   const connect = actionButton(
-    pairingFailure ? 'Generate new QR' : 'Connect Scopuly Mobile',
+    pairingFailure
+      ? 'Generate new QR'
+      : setupRequested ? 'Connect mobile account' : 'Connect Scopuly Mobile',
     'scan',
     'btn primary full-width'
   );
@@ -393,6 +411,13 @@ function accountPreview() {
 }
 
 function home(app: HTMLElement) {
+  if (setupRequested) {
+    app.appendChild(inlineAlert(
+      'Mobile account is ready',
+      `Return to ${setupRequester()} and click Scopuly again to approve account access.`,
+      'success'
+    ));
+  }
   app.appendChild(bridgeStatusHero(state, statusAction()));
   app.appendChild(accountCard(state, openNetworkDialog, () => navigate('accounts')));
 
