@@ -3,6 +3,14 @@
 Use this sheet for the first public submission of Scopuly version `0.3.2`.
 Values are intentionally limited to the browser extension.
 
+## Publication result
+
+- Status: Published
+- Published: August 11, 2026
+- Extension ID: `gfblddiiepicpjpffokeojikcphggmmd`
+- Public listing: `https://chromewebstore.google.com/detail/scopuly-stellar-mobile-si/gfblddiiepicpjpffokeojikcphggmmd`
+- Canonical privacy policy: `https://extension.scopuly.com/policy/`
+
 ## Package
 
 - Upload: `release/scopuly-mobile-signer-chromium-v0.3.2.zip`

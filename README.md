@@ -7,6 +7,11 @@ Scopuly is a Manifest V3 browser extension that connects Stellar dApps to a
 paired Scopuly signer. The extension handles dApp access, request review and
 result verification without storing wallet secret keys or seed phrases.
 
+[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/scopuly-stellar-mobile-si/gfblddiiepicpjpffokeojikcphggmmd)
+in Chrome, Brave or Opera,
+[install from Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/dgdmamodkdcafjehfelpcnifpldbfmai), or
+[install from Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/scopuly-stellar-signer/).
+
 ## Product model
 
 - The browser extension injects `window.scopuly` into dApps.
@@ -29,9 +34,11 @@ persistent requests, explicit dApp permissions and method-specific result
 verification. Automated checks cover account access, transaction and message
 requests, worker restart, rejection, cancellation, expiry and disconnect.
 
-Browser-store release still requires validation of the final archives in every
-target browser, final reviewer assets, published policy URLs and an independent
-extension security review. See the
+Version `0.3.2` is published in the Chrome Web Store under extension ID
+`gfblddiiepicpjpffokeojikcphggmmd`, in Microsoft Edge Add-ons under extension
+ID `dgdmamodkdcafjehfelpcnifpldbfmai`, and in Firefox Add-ons under add-on ID
+`extension@scopuly.com`. Chrome, Brave and Opera use the Chrome listing; Edge
+and Firefox use their dedicated store listings. See the
 [publication checklist](docs/publication-checklist.md).
 
 ## Development

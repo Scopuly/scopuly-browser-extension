@@ -19,6 +19,11 @@ const storeFontFaceCss = `
 const sourceManifest = JSON.parse(
   fs.readFileSync(path.join(root, 'public', 'manifest.json'), 'utf8')
 );
+const targetArgument = process.argv.find((argument) => argument.startsWith('--target='));
+const target = targetArgument?.slice('--target='.length) || 'chromium';
+if (!['chromium', 'edge'].includes(target)) {
+  throw new Error('Smoke target must be chromium or edge.');
+}
 const archiveArgument = process.argv.find((argument) => (
   argument === '--archive' || argument.startsWith('--archive=')
 ));
@@ -27,7 +32,7 @@ const archivePath = archiveArgument
     ? path.join(
         root,
         'release',
-        `scopuly-mobile-signer-chromium-v${sourceManifest.version}.zip`
+        `scopuly-mobile-signer-${target}-v${sourceManifest.version}.zip`
       )
     : path.resolve(root, archiveArgument.slice('--archive='.length))
   : undefined;
@@ -36,21 +41,26 @@ const extractedExtensionPath = archivePath
   : undefined;
 const extensionPath = extractedExtensionPath || path.join(root, 'dist');
 const screenshotDir = path.join(root, 'docs', 'store-assets');
-const executableCandidates = [
+const executableCandidates = (target === 'edge' ? [
+  process.env.SCOPULY_EDGE_PATH,
+  '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+  'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
+  'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
+] : [
   process.env.SCOPULY_CHROME_PATH,
   chromium.executablePath(),
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-  '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
-  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-  'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
-].filter(Boolean);
+  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+]).filter(Boolean);
 const executablePath = executableCandidates.find((candidate) => fs.existsSync(candidate));
 
 if (!executablePath) {
   if (extractedExtensionPath?.startsWith(os.tmpdir())) {
     fs.rmSync(extractedExtensionPath, { recursive: true, force: true });
   }
-  throw new Error('Test Chromium was not found. Run: npx playwright-core install chromium');
+  throw new Error(target === 'edge'
+    ? 'Microsoft Edge was not found. Set SCOPULY_EDGE_PATH.'
+    : 'Test Chromium was not found. Run: npx playwright-core install chromium');
 }
 if (archivePath) {
   if (!fs.existsSync(archivePath)) {
@@ -486,7 +496,7 @@ try {
   if (pageErrors.length) {
     throw new Error(`Extension page errors: ${pageErrors.join(' | ')}`);
   }
-  console.log(`Chromium smoke test passed for extension ${extensionId}.`);
+  console.log(`${target === 'edge' ? 'Edge' : 'Chromium'} smoke test passed for extension ${extensionId}.`);
 } finally {
   await context?.close();
   await new Promise((resolve) => dappServer.close(resolve));

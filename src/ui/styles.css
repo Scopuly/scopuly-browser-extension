@@ -167,6 +167,8 @@ summary:focus-visible {
 .btn.danger { color: #fff; border-color: transparent; background: #e94d62; }
 .btn.compact { min-height: 38px; padding: 7px 12px; font-size: 13px; }
 .btn.full-width, .full-width { width: 100%; }
+.pair-another-device { margin-top: 4px; }
+.danger-zone { border-color: color-mix(in srgb, var(--danger) 24%, var(--line)); }
 .danger-text { color: var(--danger) !important; }
 .btn.is-loading { color: transparent !important; position: relative; pointer-events: none; }
 .btn.is-loading::after {

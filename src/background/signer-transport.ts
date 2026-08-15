@@ -15,6 +15,7 @@ import {
   parsePairingRequest
 } from '../shared/bridge-validation';
 import {
+  type EncryptedBridgeEnvelope,
   SCOPULY_BRIDGE_CAPABILITIES,
   SCOPULY_BRIDGE_PROTOCOL_VERSION
 } from '../shared/bridge-protocol';
@@ -26,6 +27,7 @@ import {
   verifyPairingProof
 } from '../shared/bridge-crypto';
 import {
+  getOrCreateExtensionInstallationId,
   getMobileSessions,
   mutateMobileSessions
 } from '../shared/storage';
@@ -56,6 +58,11 @@ export interface MobileSignerTransport {
   createPairing(): Promise<PairingRequest>;
   getPairingStatus(pairing: PairingRequest): Promise<MobilePairingStatusResult>;
   cancelPairing(pairing: PairingRequest): Promise<void>;
+  prepareProviderRequest(request: MobileProviderRequest): Promise<EncryptedBridgeEnvelope>;
+  sendPreparedProviderRequest(
+    request: MobileProviderRequest,
+    envelope: EncryptedBridgeEnvelope
+  ): Promise<MobileProviderResult>;
   sendProviderRequest(request: MobileProviderRequest): Promise<MobileProviderResult>;
   getProviderRequestStatus(context: ProviderStatusContext): Promise<MobileProviderResult>;
   cancelProviderRequest(context: ProviderCancelContext): Promise<void>;
@@ -373,11 +380,12 @@ export class ScopulyBridgeTransport implements MobileSignerTransport {
       Date.now() + 10 * 60 * 1000
     );
     try {
+      const installationId = await getOrCreateExtensionInstallationId();
       const response = await this.request('/v1/extension/pairings', {
         method: 'POST',
         body: JSON.stringify({
           protocolVersion: SCOPULY_BRIDGE_PROTOCOL_VERSION,
-          extensionId: chrome.runtime.id,
+          extensionId: `instance:${chrome.runtime.id}:${installationId}`,
           extensionVersion: chrome.runtime.getManifest().version,
           extensionPublicKey: channel.publicKey,
           capabilities: SCOPULY_BRIDGE_CAPABILITIES
@@ -524,13 +532,26 @@ export class ScopulyBridgeTransport implements MobileSignerTransport {
     }
   }
 
-  async sendProviderRequest(request: MobileProviderRequest) {
-    const envelope = await encryptForMobile(
+  prepareProviderRequest(request: MobileProviderRequest) {
+    return encryptForMobile(
       request.sessionId,
       request.requestId,
       request.expiresAt,
       request
     );
+  }
+
+  async sendPreparedProviderRequest(
+    request: MobileProviderRequest,
+    envelope: EncryptedBridgeEnvelope
+  ) {
+    if (envelope.sessionId !== request.sessionId
+      || envelope.requestId !== request.requestId
+      || envelope.expiresAt !== request.expiresAt
+      || envelope.direction !== 'extension-to-mobile') {
+      throw new Error('Stored Scopuly provider envelope does not match its request.');
+    }
+
     const response = await this.request('/v1/extension/provider-requests', {
       method: 'POST',
       headers: relayAuthorization(
@@ -554,6 +575,13 @@ export class ScopulyBridgeTransport implements MobileSignerTransport {
       requestId: request.requestId,
       expectedMethod: request.method
     });
+  }
+
+  async sendProviderRequest(request: MobileProviderRequest) {
+    return this.sendPreparedProviderRequest(
+      request,
+      await this.prepareProviderRequest(request)
+    );
   }
 
   async getProviderRequestStatus(context: ProviderStatusContext) {
@@ -638,6 +666,9 @@ export class ScopulyBridgeTransport implements MobileSignerTransport {
     if (!session.channel) {
       throw new Error('Scopuly Mobile session has no authenticated encrypted channel.');
     }
+
+    let revoked = false;
+
     try {
       const requestId = crypto.randomUUID();
       const envelope = await encryptForMobile(
@@ -656,7 +687,16 @@ export class ScopulyBridgeTransport implements MobileSignerTransport {
           envelope
         })
       });
-    } finally {
+      revoked = true;
+    } catch (error) {
+      if (error instanceof BridgeTransportError && [404, 410].includes(error.status || 0)) {
+        revoked = true;
+      } else {
+        throw error;
+      }
+    }
+
+    if (revoked) {
       await deleteBridgePrivateKey(session.channel.privateKeyId);
     }
   }

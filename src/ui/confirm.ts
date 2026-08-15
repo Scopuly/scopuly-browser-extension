@@ -60,6 +60,18 @@ function visibleStateKey() {
 
 async function closeWindow() {
   if (pollTimer) window.clearInterval(pollTimer);
+  if (request && ['completed', 'rejected', 'expired', 'failed'].includes(request.status)) {
+    await api.dismissPendingRequest(requestId).catch(() => undefined);
+  }
+  try {
+    const currentWindow = await chrome.windows.getCurrent();
+    if (currentWindow.id !== undefined) {
+      await chrome.windows.remove(currentWindow.id);
+      return;
+    }
+  } catch (_error) {
+    // Fall through to the DOM close for browsers without promise-based windows APIs.
+  }
   window.close();
 }
 

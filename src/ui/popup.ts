@@ -413,8 +413,8 @@ function accountPreview() {
 function home(app: HTMLElement) {
   if (setupRequested) {
     app.appendChild(inlineAlert(
-      'Mobile account is ready',
-      `Return to ${setupRequester()} and click Scopuly again to approve account access.`,
+      'Step 1 complete — mobile is connected',
+      `Return to ${setupRequester()} and click Connect Scopuly again. Step 2 will ask you to approve this website's public account access.`,
       'success'
     ));
   }
@@ -460,8 +460,12 @@ function accounts(app: HTMLElement) {
   }));
   app.appendChild(sectionHeading(
     'Mobile accounts',
-    'Choose the account that new dApps will use.',
-    add
+    'Choose the account that new dApps will use.'
+  ));
+  app.appendChild(inlineAlert(
+    'Accounts belong to the paired device',
+    'Disconnecting a device revokes every public account it shared. Selecting an account only changes which one new dApps receive.',
+    'neutral'
   ));
 
   const groups = groupAccountsBySession(state.mobileAccounts, state.mobileSessions);
@@ -517,12 +521,31 @@ function accounts(app: HTMLElement) {
     sessionPanel.appendChild(foot);
     app.appendChild(sessionPanel);
   });
+
+  add.classList.add('full-width', 'pair-another-device');
+  app.appendChild(add);
 }
 
 function dapps(app: HTMLElement) {
+  const disconnectAll = actionButton('Disconnect all', 'trash', 'btn ghost compact danger-text');
+  disconnectAll.addEventListener('click', async () => {
+    const approved = await confirmDialog(
+      'Disconnect all dApps?',
+      `All ${state.connections.length} connected website${state.connections.length === 1 ? '' : 's'} will need to request account access again.`,
+      'Disconnect all',
+      'danger'
+    );
+    if (!approved) return;
+    await safeAction(disconnectAll, async () => {
+      state = await api.disconnectAllOrigins();
+      showToast('All dApps disconnected', 'success');
+      render();
+    });
+  });
   app.appendChild(sectionHeading(
     'Connected dApps',
-    'Review which websites can see each paired public address.'
+    'Review which websites can see each paired public address.',
+    state.connections.length ? disconnectAll : undefined
   ));
   if (!state.connections.length) {
     app.appendChild(emptyState(

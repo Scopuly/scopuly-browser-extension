@@ -22,6 +22,7 @@ const KEYS = {
   bridgeHealth: 'scopuly.bridgeHealth',
   selectedMobileAccount: 'scopuly.selectedMobileAccount',
   pairing: 'scopuly.pairing',
+  extensionInstallationId: 'scopuly.extensionInstallationId',
   pendingRequests: 'scopuly.pendingRequests'
 };
 const TERMINAL_REQUEST_RETENTION_MS = 15 * 60 * 1000;
@@ -61,6 +62,20 @@ export async function saveWalletRecord(wallet: WalletRecord) {
 
 export async function removeWalletRecord() {
   await chrome.storage.local.remove(KEYS.wallet);
+}
+
+export async function getOrCreateExtensionInstallationId() {
+  return inStorageMutationQueue(KEYS.extensionInstallationId, async () => {
+    const result = await getMany<{ [KEYS.extensionInstallationId]?: string }>([
+      KEYS.extensionInstallationId
+    ]);
+    const existing = result[KEYS.extensionInstallationId];
+    if (typeof existing === 'string' && existing.length >= 16) return existing;
+
+    const created = crypto.randomUUID();
+    await chrome.storage.local.set({ [KEYS.extensionInstallationId]: created });
+    return created;
+  });
 }
 
 export async function getSettings(): Promise<ExtensionSettings> {

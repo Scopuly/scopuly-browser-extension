@@ -313,7 +313,12 @@ export async function selectMobileAccount(accountId: string) {
 }
 
 export async function refreshMobileSessionHealth() {
-  const sessions = liveSessions(await getMobileSessions());
+  const [storedSessions, accounts, selectedAccountId] = await Promise.all([
+    getMobileSessions(),
+    getMobileAccounts(),
+    getSelectedMobileAccountId()
+  ]);
+  const sessions = liveSessions(storedSessions);
 
   if (!sessions.length) {
     await saveBridgeHealth({ status: 'unchecked' });
@@ -329,9 +334,11 @@ export async function refreshMobileSessionHealth() {
     if (error instanceof BridgeTransportError) {
       status = error.retryable
         ? 'unreachable'
-        : [401, 404, 410].includes(error.status || 0)
+        : [401, 410].includes(error.status || 0)
           ? 'reconnect-required'
-          : 'incompatible';
+          : error.status === 404
+            ? 'unreachable'
+            : 'incompatible';
     } else if (isBridgePrivateKeyUnavailableError(error)) {
       status = 'reconnect-required';
     } else if (/protocol version mismatch/i.test(message)) {
@@ -365,16 +372,27 @@ export async function refreshMobileSessionHealth() {
       : session;
   }));
 
-  const failed = checks.filter((check) => check.health.status !== 'healthy');
-  const overall = failed.find((check) => check.health.status === 'reconnect-required')
-    || failed.find((check) => check.health.status === 'incompatible')
-    || failed.find((check) => check.health.status === 'unreachable');
-  await saveBridgeHealth(overall?.health || {
+  const selectedAccount = accounts.find((account) => account.id === selectedAccountId)
+    || accounts.find((account) => sessions.some((session) => session.id === account.sessionId));
+  const activeCheck = checks.find((check) => check.id === selectedAccount?.sessionId)
+    || checks[0];
+  const operationalCheck = checks.find((check) => check.health.status === 'healthy');
+  await saveBridgeHealth(operationalCheck?.health || activeCheck?.health || {
     status: 'healthy',
     checkedAt: Date.now()
   });
 
   return getMobileState();
+}
+
+export async function markMobileSessionHealthy(sessionId: string) {
+  const health: BridgeHealth = {status: 'healthy', checkedAt: Date.now()};
+  await mutateMobileSessions((sessions) => sessions.map((session) => (
+    session.id === sessionId
+      ? {...session, lastSeenAt: health.checkedAt!, health}
+      : session
+  )));
+  await saveBridgeHealth(health);
 }
 
 export async function disconnectMobileSession(sessionId: string) {
@@ -384,7 +402,7 @@ export async function disconnectMobileSession(sessionId: string) {
   ]);
   const session = sessions.find((item) => item.id === sessionId);
   if (!session) return getMobileState();
-  if (session) await mobileSignerTransport.disconnect(session).catch(() => undefined);
+  if (session.channel) await mobileSignerTransport.disconnect(session);
 
   const removedAccountIds = new Set(
     accounts.filter((item) => item.sessionId === sessionId).map((item) => item.id)

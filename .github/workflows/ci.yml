@@ -28,5 +28,8 @@ jobs:
       - run: npm run build:chromium
         env:
           VITE_SCOPULY_BRIDGE_URL: https://api.scopuly.com/extension-bridge
+      - run: npm run build:firefox
+        env:
+          VITE_SCOPULY_BRIDGE_URL: https://api.scopuly.com/extension-bridge
       - run: npm run package:source
       - run: npm audit --omit=dev

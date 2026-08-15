@@ -44,6 +44,10 @@ export const api = {
     send<DappPolicy[]>({ type: 'SCOPULY_REMOVE_DAPP_POLICY', origin }),
   disconnectOrigin: (origin: string) =>
     send<WalletState>({ type: 'SCOPULY_DISCONNECT_ORIGIN', origin }),
+  disconnectAllOrigins: () =>
+    send<WalletState>({ type: 'SCOPULY_DISCONNECT_ALL_ORIGINS' }),
+  disconnectAll: () =>
+    send<WalletState>({ type: 'SCOPULY_DISCONNECT_ALL' }),
   reviewXdr: (xdr: string, networkPassphrase?: string) =>
     send<TransactionReview>({ type: 'SCOPULY_REVIEW_XDR', xdr, networkPassphrase }),
   getPendingRequest: (requestId: string) =>
@@ -55,5 +59,7 @@ export const api = {
   approveRequest: (requestId: string) =>
     send<unknown>({ type: 'SCOPULY_APPROVE_REQUEST', requestId }),
   rejectRequest: (requestId: string, reason?: string) =>
-    send<{ ok: true }>({ type: 'SCOPULY_REJECT_REQUEST', requestId, reason })
+    send<{ ok: true }>({ type: 'SCOPULY_REJECT_REQUEST', requestId, reason }),
+  dismissPendingRequest: (requestId: string) =>
+    send<{ ok: true }>({ type: 'SCOPULY_DISMISS_PENDING_REQUEST', requestId })
 };

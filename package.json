@@ -1,6 +1,6 @@
 {
   "name": "scopuly-extension",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "private": true,
   "description": "Manifest V3 browser extension that connects Stellar dApps to a paired Scopuly signer.",
   "license": "MIT",
@@ -33,6 +33,7 @@
     "smoke:chromium": "node scripts/smoke-extension.mjs",
     "smoke:playground": "npm run playground:build && node scripts/smoke-developer-playground.mjs",
     "smoke:chromium:archive": "node scripts/smoke-extension.mjs --archive",
+    "smoke:edge:archive": "node scripts/smoke-extension.mjs --archive --target=edge",
     "smoke:chromium:pairing": "node scripts/smoke-pairing-flow.mjs --archive",
     "smoke:chromium:reviewer-assets": "node scripts/smoke-pairing-flow.mjs --archive --capture-assets",
     "smoke:firefox:archive": "node scripts/smoke-firefox.mjs",
