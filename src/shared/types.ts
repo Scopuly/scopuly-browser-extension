@@ -1,3 +1,5 @@
+import type { EncryptedBridgeEnvelope } from './bridge-protocol';
+
 export const NETWORKS = {
   public: {
     id: 'public',
@@ -237,6 +239,7 @@ export type PendingRequest = {
   providerMethod?: ProviderMethod;
   confirmationWindowId?: number;
   transportRequestId?: string;
+  mobileRequestEnvelope?: EncryptedBridgeEnvelope;
   mobilePollAttempt?: number;
   lastTransportError?: string;
   mobilePushStatus?: MobilePushDeliveryStatus;

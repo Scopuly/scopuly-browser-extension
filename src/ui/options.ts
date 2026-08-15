@@ -7,6 +7,7 @@ import { SCOPULY_PROVIDER_VERSION } from '../shared/provider-contract';
 import {
   actionButton,
   appHeader,
+  confirmDialog,
   emptyState,
   iconButton,
   inlineAlert,
@@ -214,6 +215,29 @@ async function render() {
   });
   network.appendChild(networkChoices);
   aside.appendChild(network);
+
+  const disconnect = el('section', 'panel settings-section compact-settings danger-zone');
+  disconnect.appendChild(sectionHeading(
+    'Disconnect Scopuly',
+    'Revoke every paired mobile session and connected dApp. Security settings remain unchanged.'
+  ));
+  const disconnectAll = actionButton('Disconnect all sessions and dApps', 'trash', 'btn danger full-width');
+  disconnectAll.addEventListener('click', async () => {
+    const approved = await confirmDialog(
+      'Disconnect everything?',
+      'All mobile accounts and connected dApps will be removed from this browser. Pairing will be required again.',
+      'Disconnect all',
+      'danger'
+    );
+    if (!approved) return;
+    await safeAction(disconnectAll, async () => {
+      await api.disconnectAll();
+      showToast('All Scopuly connections were removed', 'success');
+      await render();
+    });
+  });
+  disconnect.appendChild(disconnectAll);
+  aside.appendChild(disconnect);
 
   const about = el('section', 'panel settings-section compact-settings');
   about.appendChild(sectionHeading('Advanced & about'));

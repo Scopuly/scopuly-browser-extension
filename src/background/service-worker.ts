@@ -1,6 +1,7 @@
 import {
   approvePendingRequest,
   consumePendingRequest,
+  dismissPendingRequest,
   getPendingRequest,
   getProviderSnapshot,
   handleProviderRequest,
@@ -112,6 +113,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         await rejectPendingRequestsForOrigin(origin);
         return disconnectMobileOrigin(origin);
       }
+      case 'SCOPULY_DISCONNECT_ALL_ORIGINS': {
+        const state = await getMobileState();
+        for (const connection of state.connections) {
+          await rejectPendingRequestsForOrigin(connection.origin);
+          await disconnectMobileOrigin(connection.origin);
+        }
+        return getMobileState();
+      }
+      case 'SCOPULY_DISCONNECT_ALL': {
+        const state = await getMobileState();
+        for (const session of state.mobileSessions) {
+          await rejectPendingRequestsForSession(session.id);
+          await disconnectMobileSession(session.id);
+        }
+        const remaining = await getMobileState();
+        for (const connection of remaining.connections) {
+          await rejectPendingRequestsForOrigin(connection.origin);
+          await disconnectMobileOrigin(connection.origin);
+        }
+        await cancelMobilePairing();
+        return getMobileState();
+      }
       case 'SCOPULY_REVIEW_XDR': {
         const settings = await getSettings();
         const passphrase = message.networkPassphrase || NETWORKS[settings.networkId].passphrase;
@@ -129,6 +152,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       case 'SCOPULY_REJECT_REQUEST':
         await rejectPendingRequest(message.requestId, message.reason);
         return { ok: true };
+      case 'SCOPULY_DISMISS_PENDING_REQUEST':
+        return dismissPendingRequest(message.requestId);
       case 'SCOPULY_PROVIDER_REQUEST':
         return handleProviderRequest(message.payload, sender);
       case 'SCOPULY_PROVIDER_SNAPSHOT':

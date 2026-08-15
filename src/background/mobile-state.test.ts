@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   connectMobileOrigin,
   disconnectMobileSession,
   getMobileState,
   getOriginConnection,
+  refreshMobileSessionHealth,
   resolveConnectedMobileAccount,
   touchMobileOrigin
 } from './mobile-state';
@@ -13,10 +14,12 @@ import {
   saveBridgePrivateKey
 } from './bridge-key-store';
 import { generateBridgeKeyPair } from '../shared/bridge-crypto';
+import { BridgeTransportError, mobileSignerTransport } from './signer-transport';
 
 const storageState: Record<string, unknown> = {};
 
 beforeEach(() => {
+  vi.restoreAllMocks();
   for (const key of Object.keys(storageState)) delete storageState[key];
   globalThis.chrome = {
     storage: {
@@ -178,6 +181,90 @@ describe('mobile state privacy boundary', () => {
     expect(storageState['scopuly.connections']).toEqual([
       expect.objectContaining({ origin: 'https://b.example' })
     ]);
+  });
+
+  it('keeps an encrypted mobile session when relay revocation fails', async () => {
+    const now = Date.now();
+    storageState['scopuly.mobileSessions'] = [{
+      id: 'session-retry-disconnect',
+      transport: 'scopuly-bridge',
+      status: 'connected',
+      accountIds: ['account-retry-disconnect'],
+      capabilities: ['signTransaction'],
+      createdAt: now,
+      expiresAt: now + 60_000,
+      lastSeenAt: now,
+      channel: {
+        protocolVersion: '1.0',
+        pairingId: 'pairing-retry-disconnect',
+        extensionPublicKey: 'extension-public-channel-key',
+        mobilePublicKey: 'mobile-public-channel-key',
+        privateKeyId: 'private-key-id-retry-disconnect',
+        relayAccessToken: 'e'.repeat(43),
+        sendCounter: 1,
+        receivedCounters: []
+      }
+    }];
+    storageState['scopuly.mobileAccounts'] = [{
+      id: 'account-retry-disconnect',
+      sessionId: 'session-retry-disconnect'
+    }];
+    vi.spyOn(mobileSignerTransport, 'disconnect')
+      .mockRejectedValueOnce(new Error('Relay unavailable'));
+
+    await expect(disconnectMobileSession('session-retry-disconnect'))
+      .rejects.toThrow('Relay unavailable');
+    expect(storageState['scopuly.mobileSessions']).toEqual([
+      expect.objectContaining({ id: 'session-retry-disconnect' })
+    ]);
+    expect(storageState['scopuly.mobileAccounts']).toEqual([
+      expect.objectContaining({ id: 'account-retry-disconnect' })
+    ]);
+  });
+
+  it('uses the active account session for the global bridge status', async () => {
+    const now = Date.now();
+    const session = (id: string, accountId: string) => ({
+      id,
+      transport: 'scopuly-bridge' as const,
+      status: 'connected' as const,
+      accountIds: [accountId],
+      capabilities: ['signMessage' as const],
+      createdAt: now,
+      expiresAt: now + 60_000,
+      lastSeenAt: now,
+      protocolVersion: '1.0',
+      channel: {
+        protocolVersion: '1.0',
+        pairingId: `pairing-${id}`,
+        extensionPublicKey: 'extension-public-channel-key',
+        mobilePublicKey: 'mobile-public-channel-key',
+        privateKeyId: `private-${id}`,
+        relayAccessToken: 'e'.repeat(43),
+        sendCounter: 1,
+        receivedCounters: []
+      }
+    });
+    storageState['scopuly.mobileSessions'] = [
+      session('active-session', 'active-account'),
+      session('stale-session', 'stale-account')
+    ];
+    storageState['scopuly.mobileAccounts'] = [
+      {id: 'active-account', sessionId: 'active-session'},
+      {id: 'stale-account', sessionId: 'stale-session'}
+    ];
+    storageState['scopuly.selectedMobileAccount'] = 'active-account';
+    vi.spyOn(mobileSignerTransport, 'getSessionHealth')
+      .mockImplementation(async (value) => {
+        if (value.id === 'active-session') return now + 1;
+        throw new BridgeTransportError('Bridge session was not found.', false, 404);
+      });
+
+    const state = await refreshMobileSessionHealth();
+
+    expect(state.bridgeHealth.status).toBe('healthy');
+    expect(state.mobileSessions.find((item) => item.id === 'stale-session')?.health?.status)
+      .toBe('unreachable');
   });
 
   it('updates local dApp activity without changing its permission data', async () => {

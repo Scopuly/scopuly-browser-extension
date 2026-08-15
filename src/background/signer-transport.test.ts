@@ -103,7 +103,7 @@ describe('Scopuly Bridge transport integration', () => {
         extensionPublicKey = body.extensionPublicKey;
         expect(body).toMatchObject({
           protocolVersion: '1.0',
-          extensionId: 'fixture-extension-id'
+          extensionId: expect.stringMatching(/^instance:fixture-extension-id:/)
         });
         return json({
           id: pairingId,
@@ -309,6 +309,39 @@ describe('Scopuly Bridge transport integration', () => {
       pushStatus: 'accepted'
     });
     expect(mobileRequest).toEqual(request);
+
+    const preparedEnvelope = await transport.prepareProviderRequest({
+      ...request,
+      requestId: 'request-idempotent-1'
+    });
+    let repeatedRequestBody = '';
+    const repeatedFetch = vi.fn(async (_input: string | URL | Request, init?: RequestInit) => {
+      const currentBody = String(init?.body || '');
+
+      if (repeatedRequestBody) {
+        expect(currentBody).toBe(repeatedRequestBody);
+      }
+      repeatedRequestBody = currentBody;
+      return json({
+        status: 'pending',
+        transportRequestId: 'transport-idempotent-1',
+        push: { status: 'already-pending' }
+      });
+    }) as unknown as typeof fetch;
+    const repeatedTransport = new ScopulyBridgeTransport({
+      bridgeUrl: 'https://api.scopuly.com/extension-bridge',
+      fetchImpl: repeatedFetch
+    });
+
+    await repeatedTransport.sendPreparedProviderRequest(
+      {...request, requestId: 'request-idempotent-1'},
+      preparedEnvelope
+    );
+    await repeatedTransport.sendPreparedProviderRequest(
+      {...request, requestId: 'request-idempotent-1'},
+      preparedEnvelope
+    );
+    expect(repeatedFetch).toHaveBeenCalledTimes(2);
 
     const context = {
       transportRequestId,

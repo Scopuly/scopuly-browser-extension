@@ -39,6 +39,7 @@ import {
   disconnectMobileOrigin,
   getMobileState,
   getOriginConnection,
+  markMobileSessionHealthy,
   resolveConnectedMobileAccount,
   touchMobileOrigin
 } from './mobile-state';
@@ -149,6 +150,22 @@ async function openConfirmWindow(id: string) {
   });
   if (typeof created.id !== 'number') throw new Error('Scopuly could not track the confirmation window.');
   return created.id;
+}
+
+async function openMobileSetupWindow(origin: string, appName: string) {
+  const params = new URLSearchParams({
+    setup: '1',
+    origin,
+    appName
+  });
+  const url = chrome.runtime.getURL(`popup.html?${params.toString()}`);
+  await chrome.windows.create({
+    url,
+    type: 'popup',
+    width: 430,
+    height: 720,
+    focused: true
+  });
 }
 
 async function createPendingRequest(
@@ -304,6 +321,7 @@ async function completeMobileProviderRequest(
         ...request,
         status: 'rejected',
         transportRequestId: result.transportRequestId,
+        mobileRequestEnvelope: undefined,
         error: result.error || 'Request rejected in Scopuly Mobile.',
         errorCode: SCOPULY_PROVIDER_ERROR.USER_REJECTED,
         updatedAt: Date.now()
@@ -316,6 +334,7 @@ async function completeMobileProviderRequest(
         ...request,
         status: 'failed',
         transportRequestId: result.transportRequestId,
+        mobileRequestEnvelope: undefined,
         error: result.error,
         errorCode: SCOPULY_PROVIDER_ERROR.EXTERNAL_SERVICE,
         updatedAt: Date.now()
@@ -328,6 +347,7 @@ async function completeMobileProviderRequest(
       ...request,
       status: 'completed',
       transportRequestId: result.transportRequestId,
+      mobileRequestEnvelope: undefined,
       lastTransportError: undefined,
       mobilePushStatus: undefined,
       result: verified,
@@ -467,17 +487,52 @@ export async function sendPendingRequestToMobile(id: string) {
     throw new Error('Provider request is no longer awaiting Scopuly Mobile.');
   }
 
+  const accountId = request.accountId;
+  const publicKey = request.publicKey;
+  const providerMethod = request.providerMethod;
+  if (!providerMethod) throw new Error('Stored provider method is missing.');
+
   const state = await getMobileState();
   const account = state.mobileAccounts.find((item) => (
-    item.id === request.accountId && item.publicKey === request.publicKey
+    item.id === accountId && item.publicKey === publicKey
   ));
   const session = account && state.mobileSessions.find((item) => item.id === account.sessionId);
   if (!account || !session) throw new Error('The selected Scopuly Mobile session is unavailable.');
 
   try {
-    const result = await mobileSignerTransport.sendProviderRequest(
-      mobileProviderRequest(request, session.id, account.id, account.publicKey)
+    if (request.transportRequestId) {
+      const result = await mobileSignerTransport.getProviderRequestStatus({
+        transportRequestId: request.transportRequestId,
+        sessionId: session.id,
+        requestId: request.id,
+        expectedMethod: providerMethod
+      });
+      await markMobileSessionHealthy(session.id);
+      await completeMobileProviderRequest(request, result);
+      return;
+    }
+
+    const mobileRequest = mobileProviderRequest(
+      request,
+      session.id,
+      account.id,
+      account.publicKey
     );
+    const envelope = request.mobileRequestEnvelope
+      || await mobileSignerTransport.prepareProviderRequest(mobileRequest);
+
+    if (!request.mobileRequestEnvelope) {
+      request = await updatePendingRequestRecord(request.id, (current) => ({
+        ...current,
+        mobileRequestEnvelope: envelope
+      })) || request;
+    }
+
+    const result = await mobileSignerTransport.sendPreparedProviderRequest(
+      mobileRequest,
+      envelope
+    );
+    await markMobileSessionHealthy(session.id);
     await completeMobileProviderRequest(request, result);
   } catch (error) {
     await recordMobileTransportError(request, error, session.id);
@@ -510,6 +565,7 @@ async function refreshPendingRequestOnce(id: string) {
       requestId: request.id,
       expectedMethod: request.providerMethod
     });
+    await markMobileSessionHealthy(session.id);
     await completeMobileProviderRequest(request, result);
   } catch (error) {
     const state = await getMobileState();
@@ -611,6 +667,7 @@ export async function approvePendingRequest(id: string) {
     await savePendingRequestRecord({
       ...request,
       status: 'completed',
+      confirmationWindowId: undefined,
       result,
       updatedAt: Date.now()
     });
@@ -691,9 +748,25 @@ export async function rejectPendingConnectRequestForWindow(windowId: number) {
 }
 
 export async function consumePendingRequest(id: string, sender: chrome.runtime.MessageSender) {
-  const status = await getProviderRequestStatus(id, sender);
-  if (status.done) await removePendingRequestRecord(id);
-  return status;
+  // Keep the terminal record until the normal retention sweep removes it. The
+  // dApp receives an idempotent terminal result, while an already-open confirm
+  // window can still render the same final state instead of flashing
+  // "Request no longer active" immediately after a successful response.
+  return getProviderRequestStatus(id, sender);
+}
+
+export async function dismissPendingRequest(id: string) {
+  return inRequestQueue(id, async () => {
+    const request = await getPendingRequestRecord(id);
+    if (!request) return { ok: true };
+
+    if (!['completed', 'rejected', 'expired', 'failed'].includes(request.status)) {
+      throw new Error('An active Scopuly request cannot be dismissed. Cancel it first.');
+    }
+
+    await removePendingRequestRecord(id);
+    return { ok: true };
+  });
 }
 
 export async function getProviderSnapshot(sender: chrome.runtime.MessageSender) {
@@ -750,6 +823,15 @@ export async function handleProviderRequest(payload: any, sender: chrome.runtime
     await rejectPendingRequestsForOrigin(origin);
     await disconnectMobileOrigin(origin);
     return {};
+  }
+
+  if (!state.mobileAccounts.length
+    && ['requestAccess', 'getAddress', 'getPublicKey'].includes(method)) {
+    await openMobileSetupWindow(origin, appName).catch(() => undefined);
+    throw createProviderError(
+      SCOPULY_PROVIDER_ERROR.INVALID_REQUEST,
+      'First connect a Scopuly Mobile account in the extension window, then return here and try again.'
+    );
   }
 
   if (!state.mobileAccounts.length) {

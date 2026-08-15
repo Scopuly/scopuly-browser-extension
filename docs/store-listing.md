@@ -1,4 +1,25 @@
-# Chrome Web Store Listing
+# Browser Store Listings
+
+## Chrome Web Store published release
+
+- Version: `0.3.2`
+- Published: August 11, 2026
+- Extension ID: `gfblddiiepicpjpffokeojikcphggmmd`
+- Listing: `https://chromewebstore.google.com/detail/scopuly-stellar-mobile-si/gfblddiiepicpjpffokeojikcphggmmd`
+
+## Firefox Add-ons published release
+
+- Version: `0.3.2`
+- Published: August 14, 2026
+- Add-on ID: `extension@scopuly.com`
+- Listing: `https://addons.mozilla.org/en-US/firefox/addon/scopuly-stellar-signer/`
+
+## Microsoft Edge Add-ons published release
+
+- Version: `0.3.2`
+- Published: August 15, 2026
+- Extension ID: `dgdmamodkdcafjehfelpcnifpldbfmai`
+- Listing: `https://microsoftedge.microsoft.com/addons/detail/dgdmamodkdcafjehfelpcnifpldbfmai`
 
 ## Name
 

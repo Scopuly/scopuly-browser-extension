@@ -1,6 +1,6 @@
 import './styles.css';
 import { NETWORKS, type NetworkId, type WalletState } from '../shared/types';
-import { shortAddress } from '../shared/format';
+import { formatOrigin, shortAddress } from '../shared/format';
 import { api } from './api';
 import {
   accountCard,
@@ -35,6 +35,14 @@ let pairingPoll: number | undefined;
 let pairingPollInFlight = false;
 let initialHealthCheckStarted = false;
 let pairingFailure: { title: string; message: string } | null = null;
+const params = new URLSearchParams(location.search);
+const setupRequested = params.get('setup') === '1';
+const setupOrigin = params.get('origin') || '';
+const setupAppName = (params.get('appName') || '').trim().slice(0, 80);
+
+function setupRequester() {
+  return setupAppName || formatOrigin(setupOrigin);
+}
 
 async function refresh() {
   state = await api.getState();
@@ -146,6 +154,14 @@ function onboarding(app: HTMLElement) {
   hero.append(coin, copy);
   app.appendChild(hero);
 
+  if (setupRequested) {
+    app.appendChild(inlineAlert(
+      'Connect a mobile account first',
+      `${setupRequester()} requested a Stellar address. Pair Scopuly Mobile below, then return to the website and click Scopuly again.`,
+      'warning'
+    ));
+  }
+
   if (pairingFailure) {
     app.appendChild(inlineAlert(
       pairingFailure.title,
@@ -163,7 +179,9 @@ function onboarding(app: HTMLElement) {
   );
 
   const connect = actionButton(
-    pairingFailure ? 'Generate new QR' : 'Connect Scopuly Mobile',
+    pairingFailure
+      ? 'Generate new QR'
+      : setupRequested ? 'Connect mobile account' : 'Connect Scopuly Mobile',
     'scan',
     'btn primary full-width'
   );
@@ -393,6 +411,13 @@ function accountPreview() {
 }
 
 function home(app: HTMLElement) {
+  if (setupRequested) {
+    app.appendChild(inlineAlert(
+      'Step 1 complete — mobile is connected',
+      `Return to ${setupRequester()} and click Connect Scopuly again. Step 2 will ask you to approve this website's public account access.`,
+      'success'
+    ));
+  }
   app.appendChild(bridgeStatusHero(state, statusAction()));
   app.appendChild(accountCard(state, openNetworkDialog, () => navigate('accounts')));
 
@@ -435,8 +460,12 @@ function accounts(app: HTMLElement) {
   }));
   app.appendChild(sectionHeading(
     'Mobile accounts',
-    'Choose the account that new dApps will use.',
-    add
+    'Choose the account that new dApps will use.'
+  ));
+  app.appendChild(inlineAlert(
+    'Accounts belong to the paired device',
+    'Disconnecting a device revokes every public account it shared. Selecting an account only changes which one new dApps receive.',
+    'neutral'
   ));
 
   const groups = groupAccountsBySession(state.mobileAccounts, state.mobileSessions);
@@ -492,12 +521,31 @@ function accounts(app: HTMLElement) {
     sessionPanel.appendChild(foot);
     app.appendChild(sessionPanel);
   });
+
+  add.classList.add('full-width', 'pair-another-device');
+  app.appendChild(add);
 }
 
 function dapps(app: HTMLElement) {
+  const disconnectAll = actionButton('Disconnect all', 'trash', 'btn ghost compact danger-text');
+  disconnectAll.addEventListener('click', async () => {
+    const approved = await confirmDialog(
+      'Disconnect all dApps?',
+      `All ${state.connections.length} connected website${state.connections.length === 1 ? '' : 's'} will need to request account access again.`,
+      'Disconnect all',
+      'danger'
+    );
+    if (!approved) return;
+    await safeAction(disconnectAll, async () => {
+      state = await api.disconnectAllOrigins();
+      showToast('All dApps disconnected', 'success');
+      render();
+    });
+  });
   app.appendChild(sectionHeading(
     'Connected dApps',
-    'Review which websites can see each paired public address.'
+    'Review which websites can see each paired public address.',
+    state.connections.length ? disconnectAll : undefined
   ));
   if (!state.connections.length) {
     app.appendChild(emptyState(

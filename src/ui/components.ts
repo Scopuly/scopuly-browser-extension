@@ -167,7 +167,7 @@ export function accountCard(
   );
   top.append(identicon, identity);
   if (onSwitch) {
-    top.appendChild(actionButton('Switch', 'switch', 'account-switch', onSwitch));
+    top.appendChild(actionButton('Manage accounts', 'switch', 'account-switch', onSwitch));
   }
 
   const address = el('div', 'account-address');
