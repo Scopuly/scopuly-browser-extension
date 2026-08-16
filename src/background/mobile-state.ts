@@ -238,7 +238,7 @@ export function startMobilePairing() {
 
 async function refreshMobilePairingOnce() {
   const pairing = await getPairingRequest();
-  if (!pairing) throw new Error('No mobile pairing is active.');
+  if (!pairing) throw new Error('No Scopuly pairing is active.');
   if (pairing.expiresAt <= Date.now()) {
     const expired = { ...pairing, status: 'expired' as const };
     await Promise.all([
@@ -306,7 +306,7 @@ export function cancelMobilePairing() {
 export async function selectMobileAccount(accountId: string) {
   const accounts = await getMobileAccounts();
   if (!accounts.some((account) => account.id === accountId)) {
-    throw new Error('Mobile account not found.');
+    throw new Error('Scopuly account not found.');
   }
   await saveSelectedMobileAccountId(accountId);
   return getMobileState();
@@ -449,11 +449,11 @@ export async function connectMobileOrigin(
     ? state.mobileAccounts.find((item) => item.id === requestedAccountId)
     : undefined;
   if (requestedAccountId && !requestedAccount) {
-    throw new Error('The requested Scopuly Mobile account is no longer available.');
+    throw new Error('The requested Scopuly account is no longer available.');
   }
   const account = requestedAccount
     || state.mobileAccounts.find((item) => item.id === state.selectedAccountId);
-  if (!account) throw new Error('Connect Scopuly Mobile before connecting a dApp.');
+  if (!account) throw new Error('Connect Scopuly before connecting a dApp.');
 
   const now = Date.now();
   const connection: OriginConnection = {

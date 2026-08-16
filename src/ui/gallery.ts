@@ -52,7 +52,7 @@ const fixtureState: WalletState = {
     publicKey,
     name: 'Primary Account',
     supportedNetworks: ['public', 'testnet'],
-    device: { id: 'device-1', name: 'Scopuly Mobile', platform: 'ios' },
+    device: { id: 'device-1', name: 'Scopuly for Mac', platform: 'macos' },
     connectedAt: now - 86_400_000,
     lastSeenAt: now
   }],
@@ -81,7 +81,7 @@ const transactionReview: TransactionReview = {
   memo: 'None',
   timeBounds: '5 minutes',
   risk: 'medium',
-  warnings: ['Confirm the destination and amount in Scopuly Mobile.'],
+  warnings: ['Confirm the destination and amount in Scopuly.'],
   operations: [{
     index: 0,
     type: 'payment',
@@ -129,9 +129,9 @@ function requestPreview() {
   app.append(
     appHeader({ state: fixtureState }),
     statusHero({
-      title: 'Review on your phone',
-      description: 'Open Scopuly Mobile to review and approve or reject this exact request.',
-      label: 'Waiting for mobile',
+      title: 'Review in Scopuly for Mac',
+      description: 'Keep Scopuly for Mac open to review and approve or reject this exact request.',
+      label: 'Waiting for Scopuly',
       tone: 'neutral',
       icon: 'radio'
     }),
@@ -146,7 +146,7 @@ function emptyPreview() {
     appHeader({ state: fixtureState }),
     emptyState(
       'No dApps connected yet',
-      'A website appears here after you approve access to a mobile account.',
+      'A website appears here after you approve access to a Scopuly account.',
       'link'
     )
   );
@@ -159,17 +159,17 @@ async function pairingPreview() {
   const panel = el('section', 'pairing-panel');
   panel.append(
     statusChip('ENCRYPTED PAIRING', 'neutral', 'lock'),
-    el('h1', '', 'Scan with Scopuly Mobile'),
-    el('p', '', 'Open the scanner in the mobile app and confirm this browser.')
+    el('h1', '', 'Connect Scopuly'),
+    el('p', '', 'Scan on mobile, or copy the pairing link into Scopuly for Mac, then confirm this browser.')
   );
   const qrWrap = el('div', 'qr-wrap');
   const qr = el('img', 'pairing-qr') as HTMLImageElement;
-  qr.alt = 'Scopuly Mobile pairing QR code preview';
+  qr.alt = 'Scopuly pairing QR code preview';
   qr.src = await renderBrandedQr(
     'scopuly://extension/pair?id=pairing-gallery-preview&ticket=galleryPreviewToken12345678901234567890123&v=1.0&epk=galleryPublicKey'
   );
   qrWrap.appendChild(qr);
-  panel.append(qrWrap, el('div', 'pairing-status', 'Waiting for mobile · 1:45'));
+  panel.append(qrWrap, el('div', 'pairing-status', 'Waiting for Scopuly · 1:45'));
   const actions = el('div', 'pairing-actions');
   actions.append(
     actionButton('Copy link', 'copy', 'btn secondary'),

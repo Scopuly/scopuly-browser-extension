@@ -109,7 +109,7 @@ export type OriginConnection = {
 export type MobileDevice = {
   id: string;
   name: string;
-  platform?: 'ios' | 'android' | 'unknown';
+  platform?: 'ios' | 'android' | 'macos' | 'unknown';
   model?: string;
 };
 

@@ -285,10 +285,10 @@ export function pairingProofHash(payload: PairingProofPayload) {
 
 export function verifyPairingProof(payload: PairingProofPayload, signature: string) {
   const decoded = Buffer.from(signature, 'base64');
-  if (decoded.length !== 64) throw new Error('Invalid Scopuly mobile pairing proof.');
+  if (decoded.length !== 64) throw new Error('Invalid Scopuly pairing proof.');
   const signer = StellarSdk.Keypair.fromPublicKey(payload.accountPublicKey);
   if (!signer.verify(pairingProofHash(payload), decoded)) {
-    throw new Error('Scopuly mobile pairing proof does not match the shared account.');
+    throw new Error('Scopuly pairing proof does not match the shared account.');
   }
   return true;
 }

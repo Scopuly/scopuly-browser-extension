@@ -30,11 +30,9 @@ surface exposed to third-party dApps. Try the hosted version at
 
 It also publishes the optional `window.stellar.scopuly` discovery namespace.
 
-The provider is also available through the zero-dependency Stellar Wallets Kit
-2.5 adapter in
-`integrations/stellar-wallets-kit/scopuly-extension.module.mjs`. Scopuly does
-not publish a `window.freighterApi` alias because wallet identity must remain
-explicit.
+Stellar Wallets Kit support is planned as a separate upstream integration after
+the `0.3.4` browser-store rollout. Scopuly does not publish a
+`window.freighterApi` alias because wallet identity must remain explicit.
 
 ## Connection
 

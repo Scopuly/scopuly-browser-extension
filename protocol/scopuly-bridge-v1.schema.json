@@ -386,7 +386,7 @@
               "maxLength": 80
             },
             "platform": {
-              "enum": ["ios", "android", "unknown"]
+              "enum": ["ios", "android", "macos", "unknown"]
             },
             "model": {
               "type": "string",

@@ -82,9 +82,9 @@ async function render() {
   symbol.appendChild(icon('shield', 28));
   const heroCopy = el('div');
   heroCopy.append(
-    statusChip('SCOPULY MOBILE SIGNER', 'neutral'),
+    statusChip('SCOPULY SIGNER', 'neutral'),
     el('h1', '', 'Security & privacy'),
-    el('p', '', 'Control which websites can reach your paired mobile signer. Keys and final approval always stay on your phone.')
+    el('p', '', 'Control which websites can reach your paired Scopuly signer. Keys and final approval always stay in Scopuly on your signing device.')
   );
   hero.append(symbol, heroCopy);
   app.appendChild(hero);
@@ -96,7 +96,7 @@ async function render() {
   const security = el('section', 'panel settings-section');
   security.appendChild(sectionHeading(
     'Request protection',
-    'Changes are saved immediately and apply before a request reaches Scopuly Mobile.'
+    'Changes are saved immediately and apply before a request reaches Scopuly.'
   ));
 
   const saveSetting = async (
@@ -219,13 +219,13 @@ async function render() {
   const disconnect = el('section', 'panel settings-section compact-settings danger-zone');
   disconnect.appendChild(sectionHeading(
     'Disconnect Scopuly',
-    'Revoke every paired mobile session and connected dApp. Security settings remain unchanged.'
+    'Revoke every paired Scopuly session and connected dApp. Security settings remain unchanged.'
   ));
   const disconnectAll = actionButton('Disconnect all sessions and dApps', 'trash', 'btn danger full-width');
   disconnectAll.addEventListener('click', async () => {
     const approved = await confirmDialog(
       'Disconnect everything?',
-      'All mobile accounts and connected dApps will be removed from this browser. Pairing will be required again.',
+      'All Scopuly accounts and connected dApps will be removed from this browser. Pairing will be required again.',
       'Disconnect all',
       'danger'
     );

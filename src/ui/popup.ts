@@ -117,7 +117,7 @@ function legacyWalletNotice(app: HTMLElement) {
   const panel = el('section', 'panel');
   panel.appendChild(inlineAlert(
     'Legacy local signer data detected',
-    'This encrypted browser wallet is no longer used. Scopuly Mobile is the only production signer.',
+    'This encrypted browser wallet is no longer used. The paired Scopuly app is the only production signer.',
     'warning'
   ));
   const remove = actionButton('Remove legacy wallet data', 'trash', 'btn danger full-width');
@@ -144,20 +144,20 @@ function onboarding(app: HTMLElement) {
   const coin = el('img', 'hero-coin') as HTMLImageElement;
   coin.src = 'brand/scopuly-coin-192.png';
   coin.alt = '';
-  const label = statusChip('SCOPULY MOBILE SIGNER', 'neutral');
+  const label = statusChip('SCOPULY SIGNER', 'neutral');
   const copy = el('div', 'onboarding-copy');
   copy.append(
     label,
-    el('h1', '', 'Sign on your phone. Explore on desktop.'),
-    el('p', '', 'Connect Stellar dApps while your keys and final approval stay in Scopuly Mobile.')
+    el('h1', '', 'Sign in Scopuly. Explore in your browser.'),
+    el('p', '', 'Connect Stellar dApps while your keys and final approval stay in Scopuly on your signing device.')
   );
   hero.append(coin, copy);
   app.appendChild(hero);
 
   if (setupRequested) {
     app.appendChild(inlineAlert(
-      'Connect a mobile account first',
-      `${setupRequester()} requested a Stellar address. Pair Scopuly Mobile below, then return to the website and click Scopuly again.`,
+      'Connect a Scopuly account first',
+      `${setupRequester()} requested a Stellar address. Pair Scopuly below, then return to the website and click Scopuly again.`,
       'warning'
     ));
   }
@@ -172,16 +172,16 @@ function onboarding(app: HTMLElement) {
 
   const setup = el('section', 'panel onboarding-setup');
   setup.append(
-    sectionHeading('Connect in three steps', 'Pair once with an encrypted, short-lived QR code.'),
-    pairingStep('1', 'Open Scopuly Mobile', 'Unlock the wallet you want to use with desktop dApps.'),
-    pairingStep('2', 'Open the scanner', 'Scan the QR code shown by this extension.'),
+    sectionHeading('Connect in three steps', 'Pair once with an encrypted, short-lived request.'),
+    pairingStep('1', 'Open Scopuly', 'Unlock the wallet you want to use with browser dApps.'),
+    pairingStep('2', 'Scan or copy', 'Scan the QR code on mobile, or copy the link into Scopuly for Mac.'),
     pairingStep('3', 'Confirm the browser', 'Choose the public accounts you want to make available.')
   );
 
   const connect = actionButton(
     pairingFailure
       ? 'Generate new QR'
-      : setupRequested ? 'Connect mobile account' : 'Connect Scopuly Mobile',
+      : setupRequested ? 'Connect Scopuly account' : 'Connect Scopuly',
     'scan',
     'btn primary full-width'
   );
@@ -198,7 +198,7 @@ function onboarding(app: HTMLElement) {
   trust.append(
     trustFact('lock', 'No keys in the extension', 'Secret keys and seed phrases never enter the browser.'),
     trustFact('shield-check', 'Encrypted pairing', 'Account metadata and requests stay end-to-end encrypted.'),
-    trustFact('phone', 'Mobile approval', 'Your phone remains the final signer for every sensitive request.')
+    trustFact('shield-check', 'Scopuly approval', 'Your paired Scopuly app remains the final signer for every sensitive request.')
   );
   app.appendChild(trust);
 
@@ -216,8 +216,8 @@ async function pairing(app: HTMLElement) {
   const panel = el('section', 'pairing-panel');
   panel.append(
     statusChip('ENCRYPTED PAIRING', 'neutral', 'lock'),
-    el('h1', '', 'Scan with Scopuly Mobile'),
-    el('p', '', 'Open the scanner in the mobile app and confirm this browser.')
+    el('h1', '', 'Connect Scopuly'),
+    el('p', '', 'Scan on mobile, or copy the pairing link into Scopuly for Mac, then confirm this browser.')
   );
   if (pairingFailure) {
     panel.appendChild(inlineAlert(pairingFailure.title, pairingFailure.message, 'warning'));
@@ -225,7 +225,7 @@ async function pairing(app: HTMLElement) {
 
   const qrWrap = el('div', 'qr-wrap');
   const qr = el('img', 'pairing-qr') as HTMLImageElement;
-  qr.alt = 'Scopuly Mobile pairing QR code';
+  qr.alt = 'Scopuly pairing QR code';
   qr.src = await renderBrandedQr(current.uri);
   qrWrap.appendChild(qr);
   panel.appendChild(qrWrap);
@@ -265,7 +265,7 @@ function pairingSeconds(expiresAt: number) {
 }
 
 function pairingStatusText(seconds: number) {
-  return `Waiting for mobile · ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  return `Waiting for Scopuly · ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
 function updatePairingCountdown() {
@@ -359,7 +359,7 @@ function dappPreview() {
   if (!state.connections.length) {
     panel.appendChild(emptyState(
       'No dApps connected yet',
-      'A website appears here after you approve access to a mobile account.',
+      'A website appears here after you approve access to a Scopuly account.',
       'link'
     ));
     return panel;
@@ -387,7 +387,7 @@ function accountPreview() {
   if (state.mobileAccounts.length < 2) return null;
   const panel = el('section', 'panel home-accounts-panel');
   panel.appendChild(sectionHeading(
-    'Mobile accounts',
+    'Scopuly accounts',
     `${state.mobileAccounts.length} public accounts available.`,
     button('Manage', 'text-button', () => navigate('accounts'))
   ));
@@ -413,7 +413,7 @@ function accountPreview() {
 function home(app: HTMLElement) {
   if (setupRequested) {
     app.appendChild(inlineAlert(
-      'Step 1 complete — mobile is connected',
+      'Step 1 complete — Scopuly is connected',
       `Return to ${setupRequester()} and click Connect Scopuly again. Step 2 will ask you to approve this website's public account access.`,
       'success'
     ));
@@ -438,15 +438,15 @@ function home(app: HTMLElement) {
   symbol.appendChild(icon('shield-check', 20));
   const copy = el('div');
   copy.append(
-    el('b', '', 'Your phone is the final signer'),
-    el('p', '', 'Every sensitive dApp request is independently reviewed and approved in Scopuly Mobile.')
+    el('b', '', 'Scopuly is the final signer'),
+    el('p', '', 'Every sensitive dApp request is independently reviewed and approved in your paired Scopuly app.')
   );
   boundary.append(symbol, copy);
   app.appendChild(boundary);
 
   const footer = el('footer', 'app-footer');
   footer.append(
-    button('Mobile accounts', 'text-button', () => navigate('accounts')),
+    button('Scopuly accounts', 'text-button', () => navigate('accounts')),
     el('span', '', `Version ${chrome.runtime.getManifest().version}`)
   );
   app.appendChild(footer);
@@ -459,7 +459,7 @@ function accounts(app: HTMLElement) {
     await refresh();
   }));
   app.appendChild(sectionHeading(
-    'Mobile accounts',
+    'Scopuly accounts',
     'Choose the account that new dApps will use.'
   ));
   app.appendChild(inlineAlert(
@@ -475,12 +475,12 @@ function accounts(app: HTMLElement) {
     const head = el('div', 'session-head');
     const label = el('div', 'session-title');
     const symbol = el('span', 'session-icon');
-    symbol.appendChild(icon('phone', 20));
+    symbol.appendChild(icon(device?.platform === 'macos' ? 'desktop' : 'phone', 20));
     const copy = el('div');
     const sessionHealth = bridgeHealthPresentation(session.health?.status || 'unchecked');
     copy.append(
-      el('h2', '', device?.name || 'Scopuly Mobile'),
-      el('p', '', `${device?.platform?.toUpperCase() || 'MOBILE'} · checked ${formatRelativeTime(session.health?.checkedAt || session.lastSeenAt)}`)
+      el('h2', '', device?.name || 'Scopuly'),
+      el('p', '', `${device?.platform?.toUpperCase() || 'SCOPULY'} · checked ${formatRelativeTime(session.health?.checkedAt || session.lastSeenAt)}`)
     );
     label.append(symbol, copy);
     head.append(label, statusChip(sessionHealth.label, sessionHealth.tone));
@@ -501,14 +501,14 @@ function accounts(app: HTMLElement) {
     disconnect.addEventListener('click', async () => {
       const approved = await confirmDialog(
         'Disconnect this device?',
-        `This removes ${sessionAccounts.length} account${sessionAccounts.length === 1 ? '' : 's'} and disconnects dApps assigned to this mobile session.`,
+        `This removes ${sessionAccounts.length} account${sessionAccounts.length === 1 ? '' : 's'} and disconnects dApps assigned to this Scopuly session.`,
         'Disconnect device',
         'danger'
       );
       if (!approved) return;
       await safeAction(disconnect, async () => {
         state = await api.disconnectMobileSession(session.id);
-        showToast('Mobile session disconnected', 'success');
+        showToast('Scopuly session disconnected', 'success');
         if (!state.initialized) navigate('home');
         else render();
       });
@@ -597,7 +597,7 @@ function dappDetails(app: HTMLElement) {
 
   const boundary = inlineAlert(
     'Permission granted',
-    'This website can read only the public address above. Every sensitive request still requires Scopuly Mobile.',
+    'This website can read only the public address above. Every sensitive request still requires approval in Scopuly.',
     'neutral'
   );
   app.appendChild(boundary);
@@ -673,7 +673,7 @@ function managePairingPolling() {
 
 function render() {
   const titles: Record<Exclude<PopupView, 'home'>, [string, string]> = {
-    accounts: ['Mobile accounts', 'Paired devices and public accounts'],
+    accounts: ['Scopuly accounts', 'Paired devices and public accounts'],
     dapps: ['Connected dApps', 'Website access'],
     dapp: ['dApp details', 'Website permission']
   };

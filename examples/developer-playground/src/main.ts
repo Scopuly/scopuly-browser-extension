@@ -84,7 +84,7 @@ function setProviderAvailable(available: boolean) {
   elements.providerStatus.textContent = available ? 'Detected' : 'Not detected';
   elements.providerVersion.textContent = available
     ? `v${window.scopuly?.__scopulyProviderVersion || 'unknown'} · ${window.scopuly?.platform || 'extension'}`
-    : 'Install or reload Scopuly Mobile Signer';
+    : 'Install or reload Scopuly – Stellar Signer';
 }
 
 function log(message: string, kind: 'info' | 'success' | 'error' = 'info') {

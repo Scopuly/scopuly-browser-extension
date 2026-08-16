@@ -171,7 +171,39 @@ describe('Scopuly Bridge response validation', () => {
         connectedAt: now,
         lastSeenAt: now
       }]
-    })).toThrow('Duplicate mobile account network');
+    })).toThrow('Duplicate Scopuly account network');
+  });
+
+  it('accepts Scopuly for Mac as a signing device', () => {
+    const publicKey = Keypair.random().publicKey();
+    const approval = parseMobilePairingApproval({
+      session: {
+        id: 'session-mac',
+        transport: 'scopuly-bridge',
+        status: 'connected',
+        accountIds: ['account-mac'],
+        capabilities: ['signTransaction', 'signAuthEntry'],
+        createdAt: now,
+        expiresAt: now + 86_400_000,
+        lastSeenAt: now,
+        protocolVersion: '1.0'
+      },
+      accounts: [{
+        id: 'account-mac',
+        sessionId: 'session-mac',
+        publicKey,
+        name: 'Mac Account',
+        supportedNetworks: ['public'],
+        device: { id: 'device-mac', name: 'Scopuly for Mac', platform: 'macos' },
+        connectedAt: now,
+        lastSeenAt: now
+      }]
+    });
+
+    expect(approval.accounts[0].device).toMatchObject({
+      name: 'Scopuly for Mac',
+      platform: 'macos'
+    });
   });
 
   it('rejects malformed signer addresses before XDR verification', () => {

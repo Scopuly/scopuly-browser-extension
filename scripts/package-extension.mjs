@@ -15,8 +15,8 @@ const archiveDate = new Date('2026-01-01T00:00:00.000Z');
 const outputPath = path.join(
   releaseDir,
   target === 'source'
-    ? `scopuly-mobile-signer-source-v${manifest.version}.zip`
-    : `scopuly-mobile-signer-${target}-v${manifest.version}.zip`
+    ? `scopuly-stellar-signer-source-v${manifest.version}.zip`
+    : `scopuly-stellar-signer-${target}-v${manifest.version}.zip`
 );
 
 fs.mkdirSync(releaseDir, { recursive: true });
@@ -43,7 +43,8 @@ if (target === 'source') {
     'release',
     'node_modules',
     'keys',
-    'landing'
+    'landing',
+    'integrations'
   ]);
   const excludedFiles = new Set([
     'AGENTS.md',

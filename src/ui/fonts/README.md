@@ -1,6 +1,6 @@
 # Baloo 2
 
-The bundled WOFF2 files use the `Baloo 2` family shipped by Scopuly Mobile:
+The bundled WOFF2 files use the `Baloo 2` family shipped by Scopuly apps:
 
 - Regular 400
 - Medium 500

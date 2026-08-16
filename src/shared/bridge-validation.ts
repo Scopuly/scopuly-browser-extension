@@ -155,36 +155,36 @@ function parseMobileSession(value: unknown): MobileSession {
 }
 
 function parseMobileAccount(value: unknown): MobileAccount {
-  const input = record(value, 'mobile account');
-  const device = record(input.device, 'mobile device');
+  const input = record(value, 'Scopuly account');
+  const device = record(input.device, 'signing device');
   const publicKey = text(input.publicKey, 'Stellar public key', 80);
   if (!StrKey.isValidEd25519PublicKey(publicKey)) {
-    throw new Error('Invalid Stellar public key from Scopuly Mobile.');
+    throw new Error('Invalid Stellar public key from Scopuly.');
   }
   if (!Array.isArray(input.supportedNetworks)
     || !input.supportedNetworks.length
     || input.supportedNetworks.length > SCOPULY_BRIDGE_LIMITS.supportedNetworks) {
-    throw new Error('Invalid mobile account networks.');
+    throw new Error('Invalid Scopuly account networks.');
   }
   const supportedNetworks = input.supportedNetworks.map((network) => {
     if (typeof network !== 'string' || !NETWORK_IDS.has(network as NetworkId)) {
-      throw new Error('Unsupported mobile account network.');
+      throw new Error('Unsupported Scopuly account network.');
     }
     return network as NetworkId;
   });
   if (new Set(supportedNetworks).size !== supportedNetworks.length) {
-    throw new Error('Duplicate mobile account network.');
+    throw new Error('Duplicate Scopuly account network.');
   }
   const platform = optionalText(device.platform, 'device platform', 20) || 'unknown';
-  if (!['ios', 'android', 'unknown'].includes(platform)) {
-    throw new Error('Unsupported mobile device platform.');
+  if (!['ios', 'android', 'macos', 'unknown'].includes(platform)) {
+    throw new Error('Unsupported Scopuly signing device platform.');
   }
 
   return {
-    id: text(input.id, 'mobile account ID'),
+    id: text(input.id, 'Scopuly account ID'),
     sessionId: text(input.sessionId, 'mobile session ID'),
     publicKey,
-    name: text(input.name, 'mobile account name', 80),
+    name: text(input.name, 'Scopuly account name', 80),
     federationAddress: optionalText(input.federationAddress, 'federation address', 255),
     supportedNetworks,
     device: {
@@ -209,7 +209,7 @@ export function parseMobilePairingStatus(value: unknown): MobilePairingStatusRes
         && input.accounts.length <= SCOPULY_BRIDGE_LIMITS.mobileAccounts
       ? input.accounts.map(parseMobileAccount)
       : (() => {
-          throw new Error('Invalid mobile accounts response.');
+          throw new Error('Invalid Scopuly accounts response.');
         })();
 
   if ((session && !accounts?.length) || (!session && accounts?.length)) {
@@ -232,7 +232,7 @@ export function parseMobilePairingApproval(value: unknown): MobilePairingApprova
   if (!Array.isArray(input.accounts)
     || !input.accounts.length
     || input.accounts.length > SCOPULY_BRIDGE_LIMITS.mobileAccounts) {
-    throw new Error('Approved pairing has no shared mobile accounts.');
+    throw new Error('Approved pairing has no shared Scopuly accounts.');
   }
   const accounts = input.accounts.map(parseMobileAccount);
   const accountIds = new Set(accounts.map((account) => account.id));
@@ -273,7 +273,7 @@ export function parsePairingRelayStatus(value: unknown): PairingRelayStatus {
 function signerAddress(value: unknown) {
   const address = text(value, 'signer address', 80);
   if (!StrKey.isValidEd25519PublicKey(address)) {
-    throw new Error('Invalid signer address from Scopuly Mobile.');
+    throw new Error('Invalid signer address from Scopuly.');
   }
   return address;
 }
@@ -335,17 +335,17 @@ export function parseMobileProviderResult(
   if (status === 'completed' || status === 'signed') {
     const method = providerMethod(input.method, status);
     if (expectedMethod && method !== expectedMethod) {
-      throw new Error('Scopuly Mobile returned a result for a different provider method.');
+      throw new Error('Scopuly returned a result for a different provider method.');
     }
 
     if (method === 'signTransaction' || method === 'signAndSubmitTransaction') {
       const submissionStatus = optionalText(input.submissionStatus, 'submission status', 20);
       if (submissionStatus && !['success', 'pending'].includes(submissionStatus)) {
-        throw new Error('Unsupported transaction submission status from Scopuly Mobile.');
+        throw new Error('Unsupported transaction submission status from Scopuly.');
       }
       const hash = input.hash === undefined ? undefined : hex(input.hash, 'transaction hash', 64);
       if (method === 'signAndSubmitTransaction' && (!submissionStatus || !hash)) {
-        throw new Error('Incomplete submitted transaction result from Scopuly Mobile.');
+        throw new Error('Incomplete submitted transaction result from Scopuly.');
       }
       return {
         method,

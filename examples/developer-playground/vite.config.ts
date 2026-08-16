@@ -15,7 +15,7 @@ export default defineConfig({
     sourcemap: false
   },
   server: {
-    // The extension playground owns port 5177; Scopuly Mobile uses 5173.
+    // The extension playground owns port 5177; the Scopuly app uses 5173.
     port: 5177,
     strictPort: true,
     fs: {

@@ -11,7 +11,7 @@ const archives = targets.map((target) => ({
   path: path.join(
     root,
     'release',
-    `scopuly-mobile-signer-${target}-v${version}.zip`,
+    `scopuly-stellar-signer-${target}-v${version}.zip`,
   ),
 }));
 
@@ -50,7 +50,7 @@ for (const archive of archives) {
 
   if (archive.target === 'source') {
     const forbiddenSourcePaths = names.filter((name) => (
-      /^(?:dist|landing|release|node_modules)\//.test(name)
+      /^(?:dist|landing|release|node_modules|integrations)\//.test(name)
       || name === 'AGENTS.md'
       || name === 'src/background/vault.ts'
       || name === 'src/shared/crypto.ts'
@@ -72,8 +72,6 @@ for (const archive of archives) {
       'scripts/reproduce-firefox.mjs',
       'scripts/smoke-extension.mjs',
       'scripts/smoke-firefox.mjs',
-      'integrations/stellar-wallets-kit/scopuly-extension.module.mjs',
-      'integrations/stellar-wallets-kit/scopuly-extension.module.d.ts',
     ];
     const missing = requiredSourcePaths.filter((name) => !names.includes(name));
     if (missing.length) {

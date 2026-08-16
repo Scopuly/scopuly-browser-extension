@@ -223,15 +223,15 @@ async function createPendingRequest(
 
 function completedProviderResult(request: PendingRequest, result: MobileProviderResult) {
   if (result.status !== 'completed' || !request.providerMethod) {
-    throw new Error('Scopuly Mobile returned an incomplete provider result.');
+    throw new Error('Scopuly returned an incomplete provider result.');
   }
   if (result.method !== request.providerMethod) {
-    throw new Error('Scopuly Mobile returned a result for a different provider method.');
+    throw new Error('Scopuly returned a result for a different provider method.');
   }
 
   if (result.method === 'reportX402Receipt') {
     if (!request.receipt || result.receiptId !== request.receipt.receiptId) {
-      throw new Error('Scopuly Mobile returned a different x402 receipt.');
+      throw new Error('Scopuly returned a different x402 receipt.');
     }
     return {
       receiptId: result.receiptId,
@@ -241,7 +241,7 @@ function completedProviderResult(request: PendingRequest, result: MobileProvider
   }
 
   if (!request.publicKey || result.signerAddress !== request.publicKey) {
-    throw new Error('Scopuly Mobile returned a different signer account.');
+    throw new Error('Scopuly returned a different signer account.');
   }
 
   if (result.method === 'signMessage') {
@@ -265,10 +265,10 @@ function completedProviderResult(request: PendingRequest, result: MobileProvider
   );
   if (request.submit) {
     if (!result.submissionStatus || !result.hash) {
-      throw new Error('Scopuly Mobile did not return the transaction submission result.');
+      throw new Error('Scopuly did not return the transaction submission result.');
     }
     if (result.hash !== verified.hash) {
-      throw new Error('Scopuly Mobile returned a submission hash for a different transaction.');
+      throw new Error('Scopuly returned a submission hash for a different transaction.');
     }
     return {
       ...verified,
@@ -322,7 +322,7 @@ async function completeMobileProviderRequest(
         status: 'rejected',
         transportRequestId: result.transportRequestId,
         mobileRequestEnvelope: undefined,
-        error: result.error || 'Request rejected in Scopuly Mobile.',
+        error: result.error || 'Request rejected in Scopuly.',
         errorCode: SCOPULY_PROVIDER_ERROR.USER_REJECTED,
         updatedAt: Date.now()
       });
@@ -365,7 +365,7 @@ async function recordMobileTransportError(
   const terminalBridgeSession = error instanceof BridgeTransportError
     && [401, 404, 410].includes(error.status || 0);
   const message = missingChannelKey || terminalBridgeSession
-    ? 'The secure mobile session was lost. Pair Scopuly Mobile again.'
+    ? 'The secure signing session was lost. Pair Scopuly again.'
     : error instanceof Error ? error.message : String(error);
   if ((missingChannelKey || terminalBridgeSession) && sessionId) {
     await disconnectMobileSession(sessionId);
@@ -484,7 +484,7 @@ export async function sendPendingRequestToMobile(id: string) {
     await savePendingRequestRecord(request);
   }
   if (request.status !== 'awaitingMobile') {
-    throw new Error('Provider request is no longer awaiting Scopuly Mobile.');
+    throw new Error('Provider request is no longer awaiting Scopuly.');
   }
 
   const accountId = request.accountId;
@@ -497,7 +497,7 @@ export async function sendPendingRequestToMobile(id: string) {
     item.id === accountId && item.publicKey === publicKey
   ));
   const session = account && state.mobileSessions.find((item) => item.id === account.sessionId);
-  if (!account || !session) throw new Error('The selected Scopuly Mobile session is unavailable.');
+  if (!account || !session) throw new Error('The selected Scopuly session is unavailable.');
 
   try {
     if (request.transportRequestId) {
@@ -558,7 +558,7 @@ async function refreshPendingRequestOnce(id: string) {
       item.id === request.accountId && item.publicKey === request.publicKey
     ));
     const session = account && state.mobileSessions.find((item) => item.id === account.sessionId);
-    if (!session) throw new Error('The selected Scopuly Mobile session is unavailable.');
+    if (!session) throw new Error('The selected Scopuly session is unavailable.');
     const result = await mobileSignerTransport.getProviderRequestStatus({
       transportRequestId: request.transportRequestId,
       sessionId: session.id,
@@ -656,7 +656,7 @@ export async function approvePendingRequest(id: string) {
     const request = await getPendingRequest(id);
     if (!request) throw new Error('Pending request not found.');
     if (request.status !== 'awaitingApproval') throw new Error('This request is no longer awaiting approval.');
-    if (request.kind !== 'connect') throw new Error('Transaction approval only happens in Scopuly Mobile.');
+    if (request.kind !== 'connect') throw new Error('Transaction approval only happens in Scopuly.');
 
     const result = await connectMobileOrigin(
       request.origin,
@@ -731,7 +731,7 @@ export async function rejectPendingRequestsForSession(sessionId: string) {
   ));
   await Promise.all(active.map((request) => rejectPendingRequest(
     request.id,
-    'The paired Scopuly Mobile session was disconnected.'
+    'The paired Scopuly session was disconnected.'
   )));
 }
 
@@ -830,14 +830,14 @@ export async function handleProviderRequest(payload: any, sender: chrome.runtime
     await openMobileSetupWindow(origin, appName).catch(() => undefined);
     throw createProviderError(
       SCOPULY_PROVIDER_ERROR.INVALID_REQUEST,
-      'First connect a Scopuly Mobile account in the extension window, then return here and try again.'
+      'First connect a Scopuly account in the extension window, then return here and try again.'
     );
   }
 
   if (!state.mobileAccounts.length) {
     throw createProviderError(
       SCOPULY_PROVIDER_ERROR.INVALID_REQUEST,
-      'Connect Scopuly Mobile to the extension first.'
+      'Connect Scopuly to the extension first.'
     );
   }
 
@@ -871,7 +871,7 @@ export async function handleProviderRequest(payload: any, sender: chrome.runtime
     if (!connectedAccount) {
       throw createProviderError(
         SCOPULY_PROVIDER_ERROR.INVALID_REQUEST,
-        'Reconnect this dApp to a Scopuly Mobile account.'
+        'Reconnect this dApp to a Scopuly account.'
       );
     }
     await touchMobileOrigin(origin);
@@ -907,7 +907,7 @@ export async function handleProviderRequest(payload: any, sender: chrome.runtime
     if (!connectedSession?.capabilities.includes(requiredCapability)) {
       throw createProviderError(
         SCOPULY_PROVIDER_ERROR.INVALID_REQUEST,
-        `The paired Scopuly Mobile build does not support ${requiredCapability}.`
+        `The paired Scopuly app does not support ${requiredCapability}.`
       );
     }
 
@@ -958,7 +958,7 @@ export async function handleProviderRequest(payload: any, sender: chrome.runtime
     if (!connectedSession?.capabilities.includes('signMessage')) {
       throw createProviderError(
         SCOPULY_PROVIDER_ERROR.INVALID_REQUEST,
-        'The paired Scopuly Mobile build does not support signMessage.'
+        'The paired Scopuly app does not support signMessage.'
       );
     }
     const message = payload?.params?.message ?? payload?.params?.[0];
@@ -1007,7 +1007,7 @@ export async function handleProviderRequest(payload: any, sender: chrome.runtime
     if (!connectedSession?.capabilities.includes('signAuthEntry')) {
       throw createProviderError(
         SCOPULY_PROVIDER_ERROR.INVALID_REQUEST,
-        'The paired Scopuly Mobile build does not support signAuthEntry.'
+        'The paired Scopuly app does not support signAuthEntry.'
       );
     }
     const authEntry = payload?.params?.authEntry ?? payload?.params?.[0];
@@ -1051,7 +1051,7 @@ export async function handleProviderRequest(payload: any, sender: chrome.runtime
     if (!connectedSession?.capabilities.includes('reportX402Receipt')) {
       throw createProviderError(
         SCOPULY_PROVIDER_ERROR.INVALID_REQUEST,
-        'The paired Scopuly Mobile build does not support reportX402Receipt.'
+        'The paired Scopuly app does not support reportX402Receipt.'
       );
     }
     const receipt = normalizeX402Receipt(payload?.params || {});

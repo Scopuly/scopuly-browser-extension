@@ -11,7 +11,7 @@ if (!fs.existsSync(selectedManifestPath)) {
   process.exit(1);
 }
 const manifest = JSON.parse(fs.readFileSync(selectedManifestPath, 'utf8'));
-const productionName = 'Scopuly - Stellar Mobile Signer';
+const productionName = 'Scopuly – Stellar Signer';
 const maximumDescriptionLength = 132;
 
 if (manifest.name !== productionName || /\bv?\d+\.\d+(?:\.\d+)?\b/i.test(manifest.name)) {

@@ -162,8 +162,8 @@ export function accountCard(
   identicon.classList.add('account-identicon');
   const identity = el('div', 'account-identity');
   identity.append(
-    el('small', '', 'ACTIVE MOBILE ACCOUNT'),
-    el('h2', '', account?.name || 'Scopuly Mobile')
+    el('small', '', 'ACTIVE SCOPULY ACCOUNT'),
+    el('h2', '', account?.name || 'Scopuly')
   );
   top.append(identicon, identity);
   if (onSwitch) {
@@ -177,8 +177,8 @@ export function accountCard(
   );
   const device = el('div', 'account-device');
   device.append(
-    icon('phone', 16),
-    el('span', '', account?.device.name || 'Scopuly Mobile')
+    icon(account?.device.platform === 'macos' ? 'desktop' : 'phone', 16),
+    el('span', '', account?.device.name || 'Scopuly')
   );
   card.append(top, networkPill(state, onNetwork), address, device);
   return card;
@@ -283,7 +283,7 @@ export function connectionList(
   if (!state.connections.length) {
     wrap.appendChild(emptyState(
       'No dApps connected yet',
-      'A website appears here after you approve access to a mobile account.',
+      'A website appears here after you approve access to a Scopuly account.',
       'link'
     ));
     return wrap;
@@ -339,7 +339,7 @@ function detail(label: string, value: string, mono = false) {
 
 export function reviewPanel(review?: TransactionReview, showAdvanced = false) {
   const panel = el('section', 'review-panel');
-  panel.appendChild(sectionHeading('Transaction details', 'Decoded locally before mobile delivery.'));
+  panel.appendChild(sectionHeading('Transaction details', 'Decoded locally before delivery to Scopuly.'));
   if (!review) {
     panel.appendChild(inlineAlert('Details unavailable', 'Transaction details could not be loaded.', 'warning'));
     return panel;
@@ -399,7 +399,7 @@ export function reviewPanel(review?: TransactionReview, showAdvanced = false) {
 
 export function messageReviewPanel(review?: MessageReview) {
   const panel = el('section', 'review-panel');
-  panel.appendChild(sectionHeading('Message to sign', 'Verify this exact text in Scopuly Mobile.'));
+  panel.appendChild(sectionHeading('Message to sign', 'Verify this exact text in Scopuly.'));
   if (!review) {
     panel.appendChild(inlineAlert('Details unavailable', 'Message details could not be loaded.', 'warning'));
     return panel;
@@ -420,7 +420,7 @@ export function messageReviewPanel(review?: MessageReview) {
 
 export function authEntryReviewPanel(review?: AuthEntryReview) {
   const panel = el('section', 'review-panel');
-  panel.appendChild(sectionHeading('Soroban authorization', 'Review the complete invocation on mobile.'));
+  panel.appendChild(sectionHeading('Soroban authorization', 'Review the complete invocation in Scopuly.'));
   if (!review) {
     panel.appendChild(inlineAlert('Details unavailable', 'Authorization details could not be loaded.', 'warning'));
     return panel;
