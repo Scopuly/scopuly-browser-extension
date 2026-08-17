@@ -25,28 +25,33 @@ repository.
 - [x] Transaction, message and Soroban authorization results are verified
   before they are returned to a dApp.
 - [x] Secret keys and seed phrases never enter extension storage or UI.
+- [x] Pairing supports QR scanning on iOS/Android and pairing-link entry on
+  macOS.
+- [x] `macos` signing devices are accepted by runtime validation and the public
+  Bridge schema.
 - [x] The manifest requests only `storage` plus the required page and Scopuly
   service origins.
 
 ## Build and packaging
 
-- [x] Package and manifest versions match at `0.3.3` for the next store update.
+- [x] Package and manifest versions match at `0.3.4` for the next store update.
 - [x] Chromium production build passes local validation.
 - [x] Current Chromium archive passes exact-ZIP smoke and the complete mocked
   reviewer pairing/signing flow.
-- [x] Source ZIP reproduces the public Git file set.
+- [x] Source ZIP reproduces the Firefox release archive exactly.
 - [x] Binary packages include `LICENSE`, `THIRD_PARTY_NOTICES.md` and `OFL.txt`.
-- [x] GitHub release `0.3.3` archives pass Chromium, Edge and Firefox exact-ZIP
-  smoke checks; Firefox lint reports zero errors, warnings and notices.
-- [x] Chromium and Edge `0.3.3` archives are byte-for-byte identical.
-- [ ] Publish version `0.3.3` updates in Chrome, Edge and Firefox stores.
+- [x] Version `0.3.4` archives pass Chromium, Edge and Firefox exact-ZIP smoke
+  checks; Firefox lint reports zero errors, warnings and notices.
+- [x] Chromium and Edge `0.3.4` archives are byte-for-byte identical.
+- [ ] Publish version `0.3.4` updates in Chrome, Edge and Firefox stores.
 - [x] Publish Chromium version `0.3.2` from the approved commit.
-- [x] Generate the final Edge and Firefox `0.3.2` archives from the approved
-  release commit.
-- [x] Install and test the Edge and Firefox archives in their target browsers.
-- [x] Record SHA-256 checksums for the Edge and Firefox archives.
-- [x] Record and verify the SHA-256 checksum for the current Chromium archive.
-- [x] Complete the final target-browser check in Microsoft Edge.
+- [x] Generate the final Chromium, Edge, Firefox and source `0.3.4` archives.
+- [x] Install and test the Firefox archive in Firefox; run exact-archive smoke
+  against the Edge package.
+- [x] Record SHA-256 checksums for all four `0.3.4` archives.
+- [ ] Complete the final target-browser check in Microsoft Edge.
+- [ ] Pair the exact `0.3.4` build with installed Scopuly for Mac `2.6.18` and
+  complete account access, Testnet signing, rejection and app-restart checks.
 - [x] Firefox `0.3.2` passes `web-ext lint`, exact-package Firefox smoke and
   clean source reproduction.
 - [x] Edge `0.3.2` is byte-for-byte identical to the reviewed Chromium archive.
@@ -78,10 +83,16 @@ repository.
   `https://microsoftedge.microsoft.com/addons/detail/dgdmamodkdcafjehfelpcnifpldbfmai`.
 - [x] Store name, descriptions, permission justifications and search terms are
   drafted in [`store-listing.md`](store-listing.md).
+- [x] The `0.3.4` name and listing copy describe Scopuly on iOS, Android and
+  macOS without changing permission or privacy declarations.
+- [x] A separate canonical launch-article draft is ready for publication after
+  all three stores approve `0.3.4`.
 - [x] Required image dimensions and duplicate-image checks are automated.
 - [x] Recapture all store screenshots from the exact final Chromium archive.
 - [x] Confirm the listing contains no unsupported security or audit claims.
 - [x] Confirm privacy disclosures match the final extension behavior.
+- [ ] Deploy the updated cross-platform copy to `extension.scopuly.com` and
+  `scopuly.com`.
 
 ## Permission justifications
 

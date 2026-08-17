@@ -23,7 +23,7 @@ export function bridgeHealthPresentation(status: BridgeHealthStatus): StatusPres
     case 'healthy':
       return {
         title: 'Secure session ready',
-        description: 'Requests are delivered to your paired Scopuly Mobile.',
+        description: 'Requests are delivered to your paired Scopuly app.',
         label: 'Verified session',
         tone: 'success',
         icon: 'radio'
@@ -38,8 +38,8 @@ export function bridgeHealthPresentation(status: BridgeHealthStatus): StatusPres
       };
     case 'reconnect-required':
       return {
-        title: 'Reconnect Scopuly Mobile',
-        description: 'This mobile session can no longer be authenticated.',
+        title: 'Reconnect Scopuly',
+        description: 'This signing session can no longer be authenticated.',
         label: 'Action required',
         tone: 'danger',
         icon: 'warning'
@@ -47,7 +47,7 @@ export function bridgeHealthPresentation(status: BridgeHealthStatus): StatusPres
     case 'incompatible':
       return {
         title: 'Bridge update required',
-        description: 'The extension and mobile bridge are using incompatible protocol versions.',
+        description: 'The extension and Scopuly Bridge are using incompatible protocol versions.',
         label: 'Update required',
         tone: 'danger',
         icon: 'warning'
@@ -55,7 +55,7 @@ export function bridgeHealthPresentation(status: BridgeHealthStatus): StatusPres
     default:
       return {
         title: 'Checking secure session',
-        description: 'Confirming that the encrypted mobile channel is available.',
+        description: 'Confirming that the encrypted signing channel is available.',
         label: 'Checking',
         tone: 'neutral',
         icon: 'refresh'

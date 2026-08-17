@@ -175,13 +175,13 @@ export function verifySignedTransactionXdr(
   const signedHash = signed.hash();
 
   if (!originalHash.equals(signedHash)) {
-    throw new Error('The mobile response changed the transaction payload.');
+    throw new Error('The signer response changed the transaction payload.');
   }
 
   const originalIsFeeBump = original instanceof StellarSdk.FeeBumpTransaction;
   const signedIsFeeBump = signed instanceof StellarSdk.FeeBumpTransaction;
   if (originalIsFeeBump !== signedIsFeeBump) {
-    throw new Error('The mobile response changed the transaction envelope type.');
+    throw new Error('The signer response changed the transaction envelope type.');
   }
 
   const signatureKey = (signature: StellarSdk.xdr.DecoratedSignature) => (
@@ -219,16 +219,16 @@ export function verifySignedTransactionXdr(
       }
     }
     if ([...expectedCounts.values()].some((count) => count > 0)) {
-      throw new Error('The mobile response removed or replaced an existing transaction signature.');
+      throw new Error('The signer response removed or replaced an existing transaction signature.');
     }
   }
 
   if (added.length !== 1) {
-    throw new Error('The mobile response must add exactly one transaction signature.');
+    throw new Error('The signer response must add exactly one transaction signature.');
   }
   const keypair = StellarSdk.Keypair.fromPublicKey(expectedSigner);
   if (!keypair.verify(added[0].hash, added[0].signature.signature())) {
-    throw new Error('The mobile response is not signed by the connected account.');
+    throw new Error('The signer response is not signed by the connected account.');
   }
 
   return {

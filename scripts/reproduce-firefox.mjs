@@ -11,12 +11,12 @@ const manifest = JSON.parse(
 const sourceArchive = path.join(
   root,
   'release',
-  `scopuly-mobile-signer-source-v${manifest.version}.zip`
+  `scopuly-stellar-signer-source-v${manifest.version}.zip`
 );
 const expectedArchive = path.join(
   root,
   'release',
-  `scopuly-mobile-signer-firefox-v${manifest.version}.zip`
+  `scopuly-stellar-signer-firefox-v${manifest.version}.zip`
 );
 const temporaryRoot = fs.mkdtempSync(
   path.join(os.tmpdir(), 'scopuly-firefox-reproduction-')
@@ -78,7 +78,7 @@ try {
   const reproducedArchive = path.join(
     temporaryRoot,
     'release',
-    `scopuly-mobile-signer-firefox-v${manifest.version}.zip`
+    `scopuly-stellar-signer-firefox-v${manifest.version}.zip`
   );
   const expectedHash = sha256(expectedArchive);
   const reproducedHash = sha256(reproducedArchive);

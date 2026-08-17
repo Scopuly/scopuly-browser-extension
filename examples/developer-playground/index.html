@@ -111,9 +111,9 @@
       <section class="hero">
         <div>
           <span class="eyebrow">Developer playground</span>
-          <h1>Test the complete Scopuly mobile signer flow.</h1>
+          <h1>Test the complete Scopuly signer flow.</h1>
           <p>
-            Connect a public account, send a request to Scopuly Mobile and inspect the verified
+            Connect a public account, send a request to Scopuly and inspect the verified
             response. This page never asks for a seed phrase or secret key.
           </p>
         </div>
@@ -130,10 +130,10 @@
       <section class="qa-banner">
         <strong>Physical-device QA order</strong>
         <ol>
-          <li>Pair Scopuly Mobile and select the same network in the extension and playground.</li>
-          <li>Connect this origin and run message signing while the phone is in the background.</li>
+          <li>Pair Scopuly and select the same network in the extension and playground.</li>
+          <li>On iOS or Android, run message signing with the app in the background. On macOS, keep Scopuly open.</li>
           <li>Build and sign the no-value transaction on the selected network without submitting it.</li>
-          <li>Repeat once with Reject, then force-close/reopen mobile and repeat.</li>
+          <li>Repeat once with Reject, then restart the paired Scopuly app and repeat.</li>
         </ol>
       </section>
 
@@ -172,15 +172,15 @@
           <div class="card-heading">
             <div>
               <span class="step">02</span>
-              <h2>Background push</h2>
+              <h2>Mobile background push</h2>
             </div>
             <span class="pill">Safe request</span>
           </div>
           <p class="hint">
-            Put Scopuly Mobile in the background, then request a SEP-53 signature. The push payload
+            On iOS or Android, put Scopuly in the background, then request a SEP-53 signature. The push payload
             contains only a generic wake signal; request details stay encrypted.
           </p>
-          <label class="field-label" for="message-input">Message shown on mobile</label>
+          <label class="field-label" for="message-input">Message shown in Scopuly</label>
           <textarea id="message-input" rows="4">Scopuly physical-device QA — approve this exact message</textarea>
           <div class="actions">
             <button class="button primary" data-action="sign-message" data-requires-provider>Sign message</button>

@@ -1,6 +1,6 @@
 {
   "name": "scopuly-extension",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "private": true,
   "description": "Manifest V3 browser extension that connects Stellar dApps to a paired Scopuly signer.",
   "license": "MIT",

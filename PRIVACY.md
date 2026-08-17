@@ -32,7 +32,7 @@ content, cookies, form data or browsing history.
 ## How data is used
 
 Data is used only to provide the extension's single purpose: pairing the
-browser with Scopuly Mobile, sharing a user-approved public account with a dApp,
+browser with a paired Scopuly app, sharing a user-approved public account with a dApp,
 delivering explicit wallet requests, returning verified results and maintaining
 the security and reliability of that flow.
 

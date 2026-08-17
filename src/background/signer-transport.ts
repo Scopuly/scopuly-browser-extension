@@ -163,7 +163,7 @@ async function sessionWithChannel(sessionId: string) {
   const sessions = await getMobileSessions();
   const session = sessions.find((item) => item.id === sessionId);
   if (!session?.channel) {
-    throw new Error('Scopuly Mobile session has no authenticated encrypted channel.');
+    throw new Error('Scopuly session has no authenticated encrypted channel.');
   }
   if (session.channel.protocolVersion !== SCOPULY_BRIDGE_PROTOCOL_VERSION) {
     throw new Error('Scopuly Bridge protocol version mismatch.');
@@ -267,7 +267,7 @@ export class ScopulyBridgeTransport implements MobileSignerTransport {
   private async request(path: string, init?: RequestInit): Promise<unknown> {
     const baseUrl = this.configuredUrl();
     if (!baseUrl) {
-      throw new Error('Scopuly Mobile bridge is not configured in this build.');
+      throw new Error('Scopuly Bridge is not configured in this build.');
     }
 
     const timeoutController = init?.signal ? undefined : new AbortController();
@@ -346,7 +346,7 @@ export class ScopulyBridgeTransport implements MobileSignerTransport {
           30
         ) as MobilePushDeliveryStatus;
         if (!PUSH_DELIVERY_STATUSES.has(candidate)) {
-          throw new Error('Unsupported mobile push delivery status.');
+          throw new Error('Unsupported push delivery status.');
         }
         pushStatus = candidate;
       }
@@ -366,7 +366,7 @@ export class ScopulyBridgeTransport implements MobileSignerTransport {
     );
     const result = parseMobileProviderResult(decrypted, context.expectedMethod);
     if (result.transportRequestId !== transportRequestId) {
-      throw new Error('Encrypted mobile result has a different transport request ID.');
+      throw new Error('Encrypted signer result has a different transport request ID.');
     }
     return result;
   }
@@ -479,7 +479,7 @@ export class ScopulyBridgeTransport implements MobileSignerTransport {
 
     const accounts = result.accounts.map((account) => {
       if (!account.pairingProof) {
-        throw new Error('Approved pairing account is missing its mobile proof.');
+        throw new Error('Approved pairing account is missing its signer proof.');
       }
       verifyPairingProof({
         pairingId: pairing.id,
@@ -621,11 +621,11 @@ export class ScopulyBridgeTransport implements MobileSignerTransport {
 
   async getSessionHealth(session: MobileSession) {
     if (!session.channel) {
-      throw new Error('Scopuly Mobile session has no authenticated encrypted channel.');
+      throw new Error('Scopuly session has no authenticated encrypted channel.');
     }
 
     // A relay session without its non-extractable local key can never decrypt
-    // a mobile response. Detect that state before reporting the session healthy.
+    // a signer response. Detect that state before reporting the session healthy.
     await getBridgePrivateKey(session.channel.privateKeyId);
 
     const response = record(await this.request(
@@ -664,7 +664,7 @@ export class ScopulyBridgeTransport implements MobileSignerTransport {
 
   async disconnect(session: MobileSession) {
     if (!session.channel) {
-      throw new Error('Scopuly Mobile session has no authenticated encrypted channel.');
+      throw new Error('Scopuly session has no authenticated encrypted channel.');
     }
 
     let revoked = false;

@@ -15,7 +15,8 @@ in Chrome, Brave or Opera,
 ## Product model
 
 - The browser extension injects `window.scopuly` into dApps.
-- A user pairs a Scopuly signer by scanning a QR code.
+- A user pairs Scopuly by scanning a QR code on iOS or Android, or by copying
+  the pairing link into Scopuly for Mac.
 - The extension approves which public account a dApp may see.
 - Transaction, message, Soroban authorization, submit and x402 receipt requests
   are reviewed in the browser and forwarded to the paired signer.
@@ -40,6 +41,11 @@ ID `dgdmamodkdcafjehfelpcnifpldbfmai`, and in Firefox Add-ons under add-on ID
 `extension@scopuly.com`. Chrome, Brave and Opera use the Chrome listing; Edge
 and Firefox use their dedicated store listings. See the
 [publication checklist](docs/publication-checklist.md).
+
+Version `0.3.4` is the next store update. It adds cross-platform pairing copy,
+recognizes macOS signing devices and presents Scopuly as the final signer across
+iOS, Android and macOS without changing the provider API, permissions or Bridge
+protocol version.
 
 ## Development
 
@@ -69,7 +75,8 @@ npm run check:store-assets
 ```
 
 Archives are written to `release/`. The Firefox source archive excludes
-dependencies, generated builds, CRX/PEM files, and release artifacts.
+dependencies, generated builds, CRX/PEM files, release artifacts and deferred
+third-party integration prototypes.
 `reproduce:firefox` installs the source ZIP in a clean temporary directory,
 runs its tests, rebuilds Firefox and requires an exact SHA-256 match with the
 release ZIP.
@@ -95,9 +102,9 @@ TypeScript dApps can use
 [`@scopuly/signer-extension-api`](https://www.npmjs.com/package/@scopuly/signer-extension-api)
 for the canonical provider types and delegate functions. The Developer
 Playground uses that package directly.
-An optional Stellar Wallets Kit 2.5 module is included under
-`integrations/stellar-wallets-kit/`; it does not add runtime weight to the
-extension.
+Stellar Wallets Kit support will be proposed as a separate upstream change
+after the `0.3.4` browser-store rollout. The extension does not require a
+private Wallets Kit package.
 
 See [Provider API](docs/wallet-provider.md),
 [Architecture](docs/architecture.md), and the

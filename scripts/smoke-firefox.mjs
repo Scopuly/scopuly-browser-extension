@@ -16,7 +16,7 @@ const archivePath = archiveArgument && archiveArgument !== '--archive'
   : path.join(
       root,
       'release',
-      `scopuly-mobile-signer-firefox-v${sourceManifest.version}.zip`
+      `scopuly-stellar-signer-firefox-v${sourceManifest.version}.zip`
     );
 const firefoxCandidates = [
   process.env.SCOPULY_FIREFOX_PATH,

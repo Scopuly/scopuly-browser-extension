@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Scopuly - Stellar Mobile Signer",
+  "name": "Scopuly – Stellar Signer",
   "short_name": "Scopuly",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Connect Stellar dApps to Scopuly. Review account access and signing requests without exposing secret keys to the extension.",
   "action": {
-    "default_title": "Scopuly - Stellar Mobile Signer",
+    "default_title": "Scopuly – Stellar Signer",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/scopuly-16.png",

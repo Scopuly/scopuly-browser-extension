@@ -40,7 +40,7 @@ const archivePath = archiveArgument === '--archive' || !archiveArgument
   ? path.join(
       root,
       'release',
-      `scopuly-mobile-signer-chromium-v${manifest.version}.zip`
+      `scopuly-stellar-signer-chromium-v${manifest.version}.zip`
     )
   : path.resolve(root, archiveArgument.slice('--archive='.length));
 const captureReviewerAssets = process.argv.includes('--capture-assets');
@@ -674,7 +674,7 @@ async function handleBridgeRoute(route) {
     );
     assert(
       decryptedProviderRequest.publicKey === signers[0].publicKey(),
-      'The dApp request did not use the selected mobile account.'
+      'The dApp request did not use the selected Scopuly account.'
     );
     assert(
       decryptedProviderRequest.networkPassphrase === Networks.TESTNET,
@@ -742,7 +742,7 @@ async function handleBridgeRoute(route) {
       mobileResult = {
         status: 'rejected',
         transportRequestId,
-        error: 'Rejected in Scopuly Mobile.'
+        error: 'Rejected in Scopuly.'
       };
     } else {
       mobileResult = {
@@ -901,7 +901,7 @@ try {
   const popup = await context.newPage();
   await popup.setViewportSize({ width: 390, height: 760 });
   await popup.goto(`chrome-extension://${extensionId}/popup.html`);
-  await popup.getByRole('button', { name: 'Connect Scopuly Mobile' }).click();
+  await popup.getByRole('button', { name: 'Connect Scopuly' }).click();
   await popup.locator('.pairing-qr').waitFor();
   const qrPresentation = await popup.locator('.pairing-qr').evaluate(async (element) => {
     const image = element;
@@ -942,9 +942,9 @@ try {
   await captureStoreAsset(
     popup,
     'scopuly-store-pairing-1280x800.png',
-    'ENCRYPTED MOBILE PAIRING',
-    'Pair once with Scopuly Mobile.',
-    'Scan a short-lived QR code. Public accounts and signing requests remain end-to-end encrypted.'
+    'ENCRYPTED SCOPULY PAIRING',
+    'Pair once with the Scopuly app.',
+    'Scan a short-lived QR code on mobile or copy the pairing link into Scopuly for Mac.'
   );
   await popup.waitForFunction(() => (
     document.querySelector('.premium-account-card')
@@ -952,7 +952,7 @@ try {
 
   assert(
     await popup.locator('.home-account-list .mobile-account-row').count() === 2,
-    'The paired dashboard does not expose both mobile accounts.'
+    'The paired dashboard does not expose both Scopuly accounts.'
   );
   const uiFonts = await popup.evaluate(() => {
     const selectors = [
@@ -981,8 +981,8 @@ try {
     popup,
     'scopuly-store-dashboard-1280x800.png',
     'SECURE SIGNER CONTROL CENTER',
-    'Your phone stays the final signer.',
-    'Choose a mobile account, review connected dApps and keep final approval in Scopuly Mobile.'
+    'Scopuly stays the final signer.',
+    'Choose a Scopuly account, review connected dApps and keep final approval in your paired app.'
   );
 
   await popup.setViewportSize({ width: 320, height: 760 });
@@ -996,7 +996,7 @@ try {
   );
   await popup.setViewportSize({ width: 390, height: 760 });
 
-  await popup.getByRole('button', { name: 'Switch', exact: true }).click();
+  await popup.getByRole('button', { name: 'Manage accounts', exact: true }).click();
   await popup.waitForFunction(() => (
     document.querySelectorAll('.mobile-account-info b').length === 2
   ));
@@ -1018,7 +1018,7 @@ try {
   ]));
   assert(
     storedState['scopuly.mobileAccounts']?.length === 2,
-    'The exact ZIP did not persist both approved mobile accounts.'
+    'The exact ZIP did not persist both approved Scopuly accounts.'
   );
   assert(
     storedState['scopuly.mobileSessions']?.[0]?.channel?.privateKeyId,
@@ -1086,8 +1086,8 @@ try {
     popup,
     'scopuly-store-dashboard-1280x800.png',
     'SECURE SIGNER CONTROL CENTER',
-    'Your phone stays the final signer.',
-    'Choose a mobile account, review connected dApps and keep final approval in Scopuly Mobile.'
+    'Scopuly stays the final signer.',
+    'Choose a Scopuly account, review connected dApps and keep final approval in your paired app.'
   );
 
   const signingPromise = dapp.evaluate(
@@ -1104,9 +1104,9 @@ try {
   await captureStoreAsset(
     signingConfirmation,
     'scopuly-store-mobile-waiting-1280x800.png',
-    'PHONE-FIRST APPROVAL',
-    'Desktop requests wait for your phone.',
-    'The extension displays the exact request while Scopuly Mobile remains the final signer.'
+    'SCOPULY APPROVAL',
+    'Browser requests wait for Scopuly.',
+    'The extension displays the exact request while your paired Scopuly app remains the final signer.'
   );
   releaseFirstSigningResponse = true;
   const signed = await signingPromise;
@@ -1124,7 +1124,7 @@ try {
     'scopuly-store-success-1280x800.png',
     'VERIFIED RESULT',
     'The signed result returns to the dApp.',
-    'Scopuly verifies the mobile response before returning the SEP-53 signature to the requesting website.'
+    'Scopuly verifies the signer response before returning the SEP-53 signature to the requesting website.'
   );
   await signingConfirmation.close();
 
@@ -1168,9 +1168,9 @@ try {
   await captureStoreAsset(
     transactionConfirmation,
     'scopuly-store-mobile-waiting-1280x800.png',
-    'PHONE-FIRST TRANSACTION REVIEW',
-    'Review every Stellar transaction on your phone.',
-    'See the operation, amount, destination, fee and network before Scopuly Mobile gives final approval.',
+    'SCOPULY TRANSACTION REVIEW',
+    'Review every Stellar transaction in Scopuly.',
+    'See the operation, amount, destination, fee and network before your paired app gives final approval.',
     { focusSelector: '.request-context', focusOffset: 12 }
   );
   releaseTransactionResponse = true;
@@ -1191,7 +1191,7 @@ try {
     'scopuly-store-success-1280x800.png',
     'VERIFIED TRANSACTION RESULT',
     'A verified signed XDR returns to the dApp.',
-    'Scopuly checks the mobile response and signer before returning the signed Testnet transaction.',
+    'Scopuly checks the signer response and account before returning the signed Testnet transaction.',
     { focusSelector: '.request-context', focusOffset: 12 }
   );
   await transactionConfirmation.close();
@@ -1254,8 +1254,8 @@ try {
     rejectionConfirmation,
     'scopuly-store-rejection-1280x800.png',
     'SAFE REJECTION',
-    'Reject safely from your phone.',
-    'A mobile rejection is returned to the original website as a stable wallet error.'
+    'Reject safely in Scopuly.',
+    'A rejection in the paired app returns to the original website as a stable wallet error.'
   );
   await restartedDappSession.send('Debugger.resume');
   await restartedDappSession.detach();
@@ -1332,12 +1332,12 @@ try {
   const restartedPopup = await context.newPage();
   await restartedPopup.setViewportSize({ width: 390, height: 760 });
   await restartedPopup.goto(`chrome-extension://${extensionId}/popup.html`);
-  await restartedPopup.getByRole('button', { name: 'Mobile accounts' }).click();
+  await restartedPopup.getByRole('button', { name: 'Scopuly accounts' }).click();
   await restartedPopup.locator('.mobile-account-row').first().waitFor();
   await restartedPopup.getByRole('button', { name: 'Disconnect device' }).first().click();
   await restartedPopup.locator('dialog').getByRole('button', { name: 'Disconnect device' }).click();
   await restartedPopup
-    .getByRole('button', { name: 'Connect Scopuly Mobile' })
+    .getByRole('button', { name: 'Connect Scopuly' })
     .waitFor();
   const disconnectedStorage = await serviceWorker.evaluate(
     async () => chrome.storage.local.get([

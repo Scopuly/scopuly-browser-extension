@@ -126,19 +126,24 @@ function originSummary() {
 
 function accountSummary() {
   const account = state.mobileAccounts.find((item) => item.id === request?.accountId);
+  const macosSigner = account?.device.platform === 'macos';
   const networkId = request ? requestNetwork(request) : undefined;
   const row = el('section', 'panel request-account');
   const accountIcon = createStellarIdenticon(account?.publicKey || request?.publicKey || '', 44);
   accountIcon.classList.add('device-icon');
   const copy = el('div', 'request-account-copy');
   copy.append(
-    el('small', '', request?.kind === 'connect' ? 'PUBLIC ACCOUNT TO SHARE' : 'MOBILE SIGNING ACCOUNT'),
-    el('b', '', account?.name || 'Scopuly Mobile'),
+    el('small', '', request?.kind === 'connect' ? 'PUBLIC ACCOUNT TO SHARE' : 'SCOPULY SIGNING ACCOUNT'),
+    el('b', '', account?.name || 'Scopuly'),
     el('span', 'mono', shortAddress(account?.publicKey || request?.publicKey || '', 7))
   );
   const meta = el('div', 'request-account-meta');
   if (networkId) meta.appendChild(statusChip(NETWORKS[networkId].label, 'neutral', 'network'));
-  meta.appendChild(statusChip('Mobile', 'neutral', 'phone'));
+  meta.appendChild(statusChip(
+    macosSigner ? 'macOS' : 'Mobile',
+    'neutral',
+    macosSigner ? 'desktop' : 'phone'
+  ));
   row.append(accountIcon, copy, meta);
   return row;
 }
@@ -154,7 +159,7 @@ function connectRequest(app: HTMLElement) {
     el(
       'p',
       '',
-      'This website can read the selected Stellar address. It cannot sign transactions without a separate approval in Scopuly Mobile.'
+      'This website can read the selected Stellar address. It cannot sign transactions without a separate approval in Scopuly.'
     )
   );
   panel.append(symbol, copy);
@@ -165,24 +170,39 @@ function connectRequest(app: HTMLElement) {
 function requestStatusPresentation(): StatusPresentation {
   const status = request?.status;
   if (status === 'awaitingMobile') {
+    const account = state.mobileAccounts.find((item) => item.id === request?.accountId);
+    const macosSigner = account?.device.platform === 'macos';
+
+    if (macosSigner) {
+      return {
+        title: 'Review in Scopuly for Mac',
+        description: request?.lastTransportError
+          ? 'The bridge is reconnecting automatically. Your request remains encrypted and pending.'
+          : 'Keep Scopuly for Mac open to review and approve or reject this exact request.',
+        label: request?.lastTransportError ? 'Reconnecting' : 'Waiting for Scopuly',
+        tone: request?.lastTransportError ? 'warning' : 'neutral',
+        icon: request?.lastTransportError ? 'refresh' : 'radio'
+      };
+    }
+
     const pushFailure = request?.mobilePushStatus
       && !['accepted', 'already-pending'].includes(request.mobilePushStatus);
     const pushDescription = request?.mobilePushStatus === 'not-registered'
-      ? 'Scopuly Mobile has no push token for this session. Open the app and enable notifications, then request again.'
+      ? 'Scopuly has no push token for this session. Open the app and enable notifications, then request again.'
       : request?.mobilePushStatus === 'invalid-registration'
         ? 'The saved mobile push token is no longer valid. Open Scopuly and enable notifications again.'
         : 'The server could not send the mobile push. The encrypted request remains pending and can still be opened in Scopuly.';
 
     return {
-      title: 'Review on your phone',
+      title: 'Review in Scopuly',
       description: pushFailure
         ? pushDescription
         : request?.lastTransportError
         ? 'The bridge is reconnecting automatically. Your request remains encrypted and pending.'
-        : 'Open Scopuly Mobile to review and approve or reject this exact request.',
+        : 'Open Scopuly to review and approve or reject this exact request.',
       label: pushFailure
         ? 'Push unavailable'
-        : request?.lastTransportError ? 'Reconnecting' : 'Waiting for mobile',
+        : request?.lastTransportError ? 'Reconnecting' : 'Waiting for Scopuly',
       tone: pushFailure || request?.lastTransportError ? 'warning' : 'neutral',
       icon: pushFailure ? 'warning' : request?.lastTransportError ? 'refresh' : 'radio'
     };
@@ -190,7 +210,7 @@ function requestStatusPresentation(): StatusPresentation {
   if (status === 'completed') {
     return {
       title: request?.submit ? 'Signed and submitted' : 'Request approved',
-      description: 'Scopuly verified the mobile result before returning it to the requesting website.',
+      description: 'Scopuly verified the signing result before returning it to the requesting website.',
       label: 'Verified result',
       tone: 'success',
       icon: 'radio'
@@ -198,8 +218,8 @@ function requestStatusPresentation(): StatusPresentation {
   }
   if (status === 'rejected') {
     return {
-      title: 'Rejected on mobile',
-      description: request?.error || 'The request was rejected in Scopuly Mobile.',
+      title: 'Rejected in Scopuly',
+      description: request?.error || 'The request was rejected in Scopuly.',
       label: 'Not approved',
       tone: 'danger',
       icon: 'warning'
@@ -216,7 +236,7 @@ function requestStatusPresentation(): StatusPresentation {
   }
   return {
     title: 'Request could not be completed',
-    description: request?.error || 'The mobile signing request failed.',
+    description: request?.error || 'The Scopuly signing request failed.',
     label: 'Action required',
     tone: 'danger',
     icon: 'warning'
@@ -284,10 +304,10 @@ function actions() {
 
   if (request?.status === 'failed') {
     const close = button('Close', 'btn ghost', closeWindow);
-    const retry = actionButton('Retry mobile request', 'refresh', 'btn primary');
+    const retry = actionButton('Retry Scopuly request', 'refresh', 'btn primary');
     retry.addEventListener('click', () => safeAction(retry, async () => {
       await api.sendRequestToMobile(requestId);
-      showToast('Request sent to Scopuly Mobile', 'success');
+      showToast('Request sent to Scopuly', 'success');
       await refresh(true);
     }));
     footer.append(close, retry);

@@ -49,12 +49,12 @@ export function verifySignedMessage(
   expectedSigner: string
 ) {
   if (!/^[a-f0-9]{128}$/i.test(signedMessage)) {
-    throw new Error('Scopuly Mobile returned an invalid message signature.');
+    throw new Error('Scopuly returned an invalid message signature.');
   }
   const signature = Buffer.from(signedMessage, 'hex');
   const keypair = StellarSdk.Keypair.fromPublicKey(expectedSigner);
   if (!keypair.verifyMessage(message, signature)) {
-    throw new Error('The mobile message signature does not match the connected account.');
+    throw new Error('The Scopuly message signature does not match the connected account.');
   }
   return {
     signedMessage: signature.toString('hex'),
@@ -175,12 +175,12 @@ export function verifySignedAuthEntry(
   const preimage = StellarSdk.xdr.HashIdPreimage.fromXDR(authEntry, 'base64');
   const signature = Buffer.from(signedAuthEntry, 'base64');
   if (signature.length !== 64) {
-    throw new Error('Scopuly Mobile returned an invalid authorization signature.');
+    throw new Error('Scopuly returned an invalid authorization signature.');
   }
   const payloadHash = StellarSdk.hash(preimage.toXDR());
   const keypair = StellarSdk.Keypair.fromPublicKey(expectedSigner);
   if (!keypair.verify(payloadHash, signature)) {
-    throw new Error('The mobile authorization signature does not match the connected account.');
+    throw new Error('The Scopuly authorization signature does not match the connected account.');
   }
   return {
     signedAuthEntry: signature.toString('base64'),

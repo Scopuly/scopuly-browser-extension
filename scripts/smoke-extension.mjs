@@ -32,7 +32,7 @@ const archivePath = archiveArgument
     ? path.join(
         root,
         'release',
-        `scopuly-mobile-signer-${target}-v${sourceManifest.version}.zip`
+        `scopuly-stellar-signer-${target}-v${sourceManifest.version}.zip`
       )
     : path.resolve(root, archiveArgument.slice('--archive='.length))
   : undefined;
@@ -230,7 +230,7 @@ try {
   await popup.locator('h1').waitFor();
 
   const headline = await popup.locator('h1').textContent();
-  if (headline !== 'Sign on your phone. Explore on desktop.') {
+  if (headline !== 'Sign in Scopuly. Explore in your browser.') {
     throw new Error(`Unexpected onboarding headline: ${headline}`);
   }
 
@@ -366,8 +366,8 @@ try {
         <main>
           <section>
             <div class="eyebrow">SCOPULY MOBILE SIGNER</div>
-            <h1>Your phone stays the final signer.</h1>
-            <p>Connect Stellar dApps on desktop while every transaction is reviewed and approved in Scopuly Mobile.</p>
+            <h1>Scopuly stays the final signer.</h1>
+            <p>Connect Stellar dApps in your browser while every transaction is reviewed and approved in your paired Scopuly app.</p>
             <ul>
               <li>No secret keys in the extension</li>
               <li>Explicit dApp account access</li>
@@ -430,7 +430,7 @@ try {
         <main>
           <section>
             <div class="eyebrow">SCOPULY MOBILE SIGNER</div>
-            <h1>Explore on desktop. Sign on your phone.</h1>
+            <h1>Explore in your browser. Sign in Scopuly.</h1>
             <p>A secure bridge for Stellar dApps. Your secret keys stay out of the browser.</p>
           </section>
           <div class="frame">
@@ -482,8 +482,8 @@ try {
         <main>
           <img class="wordmark" alt="Scopuly" src="data:image/png;base64,${wordmarkImage.toString('base64')}">
           <div class="eyebrow">STELLAR MOBILE SIGNER</div>
-          <h1>Explore on desktop.<br>Sign on your phone.</h1>
-          <p>Your phone is the final signer.</p>
+          <h1>Explore in your browser.<br>Sign in Scopuly.</h1>
+          <p>Scopuly is the final signer.</p>
           <img class="coin" alt="" src="data:image/png;base64,${coinImage.toString('base64')}">
         </main>
       </body>
