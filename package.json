@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@stellar/stellar-sdk": "^16.2.0",
-    "lucide": "^1.28.0",
+    "lucide": "^1.31.0",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
